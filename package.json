@@ -1,0 +1,26 @@
+{
+  "name": "tiny-httptest",
+  "version": "1.0.0",
+  "description": "HTTP compliant test framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avoidwork/tiny-httptest.git"
+  },
+  "keywords": [
+    "http",
+    "https",
+    "test",
+    "framework",
+    "compliant"
+  ],
+  "author": "Jason Mulligan <jason.mulligan@avoidwork.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/avoidwork/tiny-httptest/issues"
+  },
+  "homepage": "https://github.com/avoidwork/tiny-httptest#readme"
+}
