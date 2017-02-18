@@ -1,0 +1,7 @@
+/node_modules/
+/test/
+.git
+.gitignore
+.eslintrc
+.travis.yml
+Gruntfile.js
