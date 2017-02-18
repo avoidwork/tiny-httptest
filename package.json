@@ -22,5 +22,12 @@
   "bugs": {
     "url": "https://github.com/avoidwork/tiny-httptest/issues"
   },
-  "homepage": "https://github.com/avoidwork/tiny-httptest"
+  "homepage": "https://github.com/avoidwork/tiny-httptest",
+  "devDependencies": {
+    "grunt": "~1.0.1",
+    "grunt-cli": "~1.2.0",
+    "grunt-contrib-nodeunit": "~1.0.0",
+    "grunt-contrib-watch": "~1.0.0",
+    "grunt-eslint": "~19.0.0"
+  }
 }
