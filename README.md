@@ -10,7 +10,7 @@ const tinyhttptest = require("tiny-httptest");
 // Simulating CORS request to localhost:8000
 Promise.all([
 	tinyhttptest({url:"http://localhost:8000", method: "OPTIONS"}).cors().end(),
-    tinyhttptest({url:"http://localhost:8000"}).expectJson().cors().end()
+    tinyhttptest({url:"http://localhost:8000"}).cors().expectJson().end()
 ]).then(() => {
 	console.log("CORS is working");
 	process.exit(0);
