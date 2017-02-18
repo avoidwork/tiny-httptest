@@ -6,7 +6,7 @@ function factory ({url, method = "GET", body = null, headers = {}, timeout = 300
 	const type = method.toUpperCase();
 
 	if (http.METHODS.includes(type)) {
-		return new TinyHTTPTest(url, type, body, headers, timeout);
+		return new TinyHTTPTest(url, type, headers, body, timeout);
 	} else {
 		throw new Error("Invalid HTTP method");
 	}
