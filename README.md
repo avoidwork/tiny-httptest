@@ -8,15 +8,21 @@ HTTP compliant test framework
 const tinyhttptest = require("tiny-httptest");
 
 // Simulating CORS request to localhost:8000
-tinyhttptest({url:"http://localhost:8000", method: "OPTIONS"}).cors().end();
-tinyhttptest({url:"http://localhost:8000"}).expectJson().cors().end(err => {
-	if (err) {
-		console.error(err.stack);
-		process.exit(1);
-	} else {
-		console.log("Finished test");
-		process.exit(0);
-	}
+Promise.all([
+	tinyhttptest({url:"http://localhost:8000", method: "OPTIONS"}).cors().end(),
+    tinyhttptest({url:"http://localhost:8000"}).expectJson().cors().end(err => {
+        if (err) {
+            console.error(err.stack);
+            process.exit(1);
+        } else {
+            console.log("Finished test");
+            process.exit(0);
+        }
+    })
+]).then(() => {
+	console.log("CORS is working");
+}, () => {
+	console.error("CORS is not working");
 });
 ```
 
