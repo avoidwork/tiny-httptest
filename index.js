@@ -1,18 +1,17 @@
 const http = require("http"),
 	path = require("path"),
-	tinyhttptest = require(path.join(__dirname, "lib", "tinyhttptest")),
-	methods = http.METHODS;
+	TinyHTTPTest = require(path.join(__dirname, "lib", "tinyhttptest"));
 
 function factory ({url, method = "get", body = null, headers = {}} = {url: "http://localhost", method: "get", body: null, headers: {}}) {
 	let obj;
 
-	if (methods.includes(method.toUpperCase())) {
-		obj = http.request();
+	if (http.METHODS.includes(method.toUpperCase())) {
+		 obj = new TinyHTTPTest(url, method, body, headers);
 	} else {
 		throw new Error("Invalid HTTP method");
 	}
 
 	return obj;
 }
-
+let x = factory();
 module.exports = factory;
