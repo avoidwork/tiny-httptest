@@ -54,6 +54,11 @@ _Promise_
 
 Ends the request, `Promise` resolves with `TinyHTTPTest` instance or rejects with `Error`.
 
+**etags([state = true])**
+_TinyHTTPTest_
+
+Enables or disables ETag capture & reuse.
+
 **expectBody([value = /\w+/])**
 _TinyHTTPTest_
 

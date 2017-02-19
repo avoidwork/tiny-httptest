@@ -27,9 +27,10 @@ tenso({
 describe("Implicit proofs", function () {
 	this.timeout(timeout + 1000);
 
-	it("GET / (captures cookie & CSRF token)", function () {
+	it("GET / (captures cookie, etag & CSRF token)", function () {
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout})
 			.cookies()
+			.etags()
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
 			.captureHeader("x-csrf-token")
@@ -37,6 +38,15 @@ describe("Implicit proofs", function () {
 			.expectValue("data", routes.get["/"])
 			.expectValue("error", null)
 			.expectValue("status", 200)
+			.end();
+	});
+
+	it("HEAD /", function () {
+		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout, method: "head"})
+			.cookies()
+			.expectStatus(200)
+			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectBody(/^$/)
 			.end();
 	});
 
