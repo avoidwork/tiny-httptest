@@ -31,7 +31,6 @@ describe("Implicit proofs", function () {
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout})
 			//.cookies()
 			.expectStatus(200)
-			.expectJson()
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
 			.expectValue("links", [])
 			.expectValue("data", routes.get["/"])
