@@ -1,7 +1,7 @@
 {
   "name": "tiny-httptest",
   "version": "1.0.0",
-  "description": "HTTP compliant test framework",
+  "description": "Lightweight HTTP compliant test framework",
   "main": "index.js",
   "scripts": {
     "test": "grunt test"

@@ -1,5 +1,5 @@
 # tiny-httptest
-HTTP compliant test framework
+Lightweight HTTP compliant test framework
 
 [![build status](https://secure.travis-ci.org/avoidwork/tiny-httptest.svg)](http://travis-ci.org/avoidwork/tiny-httptest)
 
