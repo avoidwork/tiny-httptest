@@ -37,8 +37,6 @@ _*(Number)*_ HTTP request timeout as milliseconds, defaults to `30000`
 #### url
 _*(String)*_ URL & port to request, defaults to `http://localhost`
 
-{url: "http://localhost", method: "GET", body: null, headers: {}, timeout: 30000}
-
 ## API
 **cors([hostname])**
 _TinyHTTPTest_
