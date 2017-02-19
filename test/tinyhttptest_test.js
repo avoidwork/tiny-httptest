@@ -29,9 +29,10 @@ describe("Implicit proofs", function () {
 
 	it("GET /", function () {
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout})
-			//.cookies()
+			.cookies()
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.captureHeader("x-csrf-token")
 			.expectValue("links", [])
 			.expectValue("data", routes.get["/"])
 			.expectValue("error", null)
@@ -43,8 +44,9 @@ describe("Implicit proofs", function () {
 		const body = "abc";
 
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout, method: "post"})
-			//.cookies()
+			.cookies()
 			.json(body)
+			.reuseHeader("x-csrf-token")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
 			.expectValue("links", [])
