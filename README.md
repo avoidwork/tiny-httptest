@@ -34,6 +34,16 @@ _*(Number)*_ HTTP request timeout as milliseconds, defaults to `30000`.
 _*(String)*_ URL & port to request, defaults to `http://localhost`.
 
 ## API
+**captureHeader(name)**
+_TinyHTTPTest_
+
+Captures a header to be reused by another instance of `TinyHTTPTest`.
+
+**cookies([state = true])**
+_TinyHTTPTest_
+
+Enables or disables cookie capture & reuse.
+
 **cors([hostname])**
 _TinyHTTPTest_
 
@@ -73,6 +83,11 @@ Sets request & response to `JSON`, sends `arg` if not `undefined`.
 _TinyHTTPTest_
 
 Processes the response of the `TinyHTTPTest` instance.
+
+**reuseHeader(name)**
+_TinyHTTPTest_
+
+Reuses a captured header from another instance of `TinyHTTPTest`.
 
 **send(arg)**
 _TinyHTTPTest_
