@@ -20,7 +20,6 @@ Promise.all([
 });
 ```
 ## Configuration
-The factory method receives an `Object` of request options.
 
 #### body
 _*(Mixed)*_ HTTP request body, defaults to `null` but can be `String`, `Object` or `Array`
