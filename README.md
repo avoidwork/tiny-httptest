@@ -37,7 +37,7 @@ _*(String)*_ URL & port to request, defaults to `http://localhost`.
 **cors([hostname])**
 _TinyHTTPTest_
 
-Sets request headers & response header expectations, defaults to request `hostname` if optional argument is not supplied.
+Sets request & response header expectations, defaults to request `hostname` if optional argument is not supplied.
 
 **end()**
 _Promise_
