@@ -2,7 +2,7 @@ const http = require("http"),
 	path = require("path"),
 	TinyHTTPTest = require(path.join(__dirname, "lib", "tinyhttptest"));
 
-function factory ({url, method = "GET", body = null, headers = {}, timeout = 30000} = {url: "http://localhost", method: "GET", body: null, headers: {}, timeout: 30000}) {
+function factory ({url = "http://localhost", method = "GET", body = null, headers = {}, timeout = 30000} = {}) {
 	const type = method.toUpperCase();
 
 	if (http.METHODS.includes(type)) {

@@ -8,8 +8,13 @@ module.exports = function (grunt) {
 				"test/*.js"
 			]
 		},
-		nodeunit : {
-			all : ["test/*.js"]
+		mochaTest : {
+			options: {
+				reporter: "spec"
+			},
+			test : {
+				src : ["test/*_test.js"]
+			}
 		},
 		watch : {
 			js : {
@@ -25,10 +30,10 @@ module.exports = function (grunt) {
 
 	// tasks
 	grunt.loadNpmTasks("grunt-eslint");
-	grunt.loadNpmTasks("grunt-contrib-nodeunit");
+	grunt.loadNpmTasks("grunt-mocha-test");
 	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	// aliases
-	grunt.registerTask("test", ["eslint"/*, "nodeunit"*/]);
+	grunt.registerTask("test", ["eslint", "mochaTest"]);
 	grunt.registerTask("default", ["test"]);
 };
