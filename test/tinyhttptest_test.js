@@ -27,7 +27,7 @@ tenso({
 describe("Implicit proofs", function () {
 	this.timeout(timeout + 1000);
 
-	it("GET /", function () {
+	it("GET / (captures cookie & CSRF token)", function () {
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout})
 			.cookies()
 			.expectStatus(200)
@@ -40,7 +40,7 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("POST /", function () {
+	it("POST / (reuses cookie & CSRF token)", function () {
 		const body = "abc";
 
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout, method: "post"})
