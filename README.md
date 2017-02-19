@@ -64,10 +64,10 @@ _TinyHTTPTest_
 
 Sets an expectation of response status code, default value is `200`.
 
-**json**
+**json([arg])**
 _TinyHTTPTest_
 
-Sets request header to transmit `JSON` & response `content-type` to expect `JSON`.
+Sets request & response to `JSON`, sends `arg` if not `undefined`.
 
 **process**
 _TinyHTTPTest_
