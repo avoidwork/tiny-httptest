@@ -24,7 +24,7 @@
   },
   "engineStrict": true,
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "homepage": "https://github.com/avoidwork/tiny-httptest",
   "devDependencies": {
