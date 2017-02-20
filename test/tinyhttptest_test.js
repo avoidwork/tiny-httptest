@@ -41,7 +41,7 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("HEAD /", function () {
+	it("HEAD / (reuses cookie)", function () {
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout, method: "head"})
 			.cookies()
 			.expectStatus(200)
@@ -50,11 +50,12 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("POST / (reuses cookie & CSRF token)", function () {
+	it("POST / (reuses cookie, etag & CSRF token)", function () {
 		const body = "abc";
 
 		return tinyhttptest({url: "http://localhost:" + port, timeout: timeout, method: "post"})
 			.cookies()
+			.etags()
 			.json(body)
 			.reuseHeader("x-csrf-token")
 			.expectStatus(200)
