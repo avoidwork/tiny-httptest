@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Lightweight HTTP compliant test framework",
   "main": "index.js",
   "scripts": {
