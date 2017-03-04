@@ -60,7 +60,9 @@ describe("Implicit proofs", function () {
 			.reuseHeader("x-csrf-token")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
-			.expectValue("links", [])
+			.expectValue("links", function (arg) {
+				return arg.length === 0;
+			})
 			.expectValue("data", body)
 			.expectValue("error", null)
 			.expectValue("status", 200)
