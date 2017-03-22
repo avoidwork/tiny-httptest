@@ -33,6 +33,7 @@ describe("Implicit proofs", function () {
 			.etags()
 			.expectStatus(200)
 			.expectHeader("Allow", "GET, HEAD, OPTIONS, POST")
+			.expectHeader("content-length", "60")
 			.captureHeader("x-csrf-token")
 			.expectValue("links", [])
 			.expectValue("data", routes.get["/"])
@@ -46,6 +47,7 @@ describe("Implicit proofs", function () {
 			.cookies()
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectHeader("content-length", 0)
 			.expectBody(/^$/)
 			.end();
 	});
