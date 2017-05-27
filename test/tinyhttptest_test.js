@@ -85,6 +85,7 @@ describe("Implicit proofs", function () {
 			.cors("http://not.localhost:8001")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectHeader("content-type", "application/json")
 			.expectHeader("content-length", "60")
 			.expectValue("links", [])
 			.expectValue("data", routes.get["/"])
