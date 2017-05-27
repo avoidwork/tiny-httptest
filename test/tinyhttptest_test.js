@@ -70,4 +70,26 @@ describe("Implicit proofs", function () {
 			.expectValue("status", 200)
 			.end();
 	});
+
+	it("GET / (CORS Pre-flight)", function () {
+		return tinyhttptest({url: "http://localhost:" + port, method: "OPTIONS"})
+			.cors("http://not.localhost:8001")
+			.expectStatus(200)
+			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectHeader("content-length", 0)
+			.end();
+	});
+
+	it("GET / (CORS)", function () {
+		return tinyhttptest({url: "http://localhost:" + port})
+			.cors("http://not.localhost:8001")
+			.expectStatus(200)
+			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectHeader("content-length", "60")
+			.expectValue("links", [])
+			.expectValue("data", routes.get["/"])
+			.expectValue("error", null)
+			.expectValue("status", 200)
+			.end();
+	});
 });
