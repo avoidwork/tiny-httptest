@@ -33,7 +33,7 @@ describe("Implicit proofs", function () {
 			.etags()
 			.expectStatus(200)
 			.expectHeader("Allow", "GET, HEAD, OPTIONS, POST")
-			.expectHeader("content-length", "60")
+			.expectHeader("content-length", 60)
 			.captureHeader("x-csrf-token")
 			.expectValue("links", [])
 			.expectValue("data", routes.get["/"])
@@ -47,7 +47,7 @@ describe("Implicit proofs", function () {
 			.cookies()
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
-			.expectHeader("content-length", 0)
+			.expectHeader("content-length", 60)
 			.expectBody(/^$/)
 			.end();
 	});
@@ -62,9 +62,7 @@ describe("Implicit proofs", function () {
 			.reuseHeader("x-csrf-token")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
-			.expectValue("links", function (arg) {
-				return arg.length === 0;
-			})
+			.expectValue("links", arg => arg.length === 0)
 			.expectValue("data", body)
 			.expectValue("error", null)
 			.expectValue("status", 200)
@@ -76,7 +74,7 @@ describe("Implicit proofs", function () {
 			.cors("http://not.localhost:8001")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
-			.expectHeader("content-length", 0)
+			.expectHeader("content-length", 90)
 			.end();
 	});
 
@@ -86,7 +84,7 @@ describe("Implicit proofs", function () {
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
 			.expectHeader("content-type", "application/json")
-			.expectHeader("content-length", "60")
+			.expectHeader("content-length", 60)
 			.expectValue("links", [])
 			.expectValue("data", routes.get["/"])
 			.expectValue("error", null)
