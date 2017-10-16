@@ -9,13 +9,13 @@ tiny-httptest makes it easy to validate CORS is working, capture cookies & HTTP 
 const tinyhttptest = require("tiny-httptest");
 
 // Simulating CORS request to localhost:8000
-tinyhttptest({url:"http://localhost:8000", method: "OPTIONS"}).cors().end().then(() => {
-	return tinyhttptest({url:"http://localhost:8000"}).cors().expectJson().end();
-}).then(() => {
-	console.log("CORS is working");
-}, () => {
-	console.error("CORS is not working");
-});
+
+tinyhttptest({url:"http://localhost:8000", method: "OPTIONS"})
+	.cors("http://not.localhost:8001")
+	.end()
+	.then(() => tinyhttptest({url:"http://localhost:8000"}).cors("http://not.localhost:8001").expectJson().end())
+	.then(() => console.log("CORS is working"))
+	.catch(e => console.error(`CORS is not working: ${e.message}`));
 ```
 ## Configuration
 
