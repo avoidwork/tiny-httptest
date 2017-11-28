@@ -25,6 +25,9 @@ _*(Mixed)*_ HTTP request body, defaults to `null` but can be `String`, `Object` 
 #### headers
 _*(Object)*_ HTTP request headers, defaults to `{}`.
 
+#### http2
+_*(Boolean)*_ Enables HTTP2 requests, defaults to `false`.
+
 #### method
 _*(String)*_ HTTP request method, defaults to `GET`.
 
