@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Lightweight HTTP compliant test framework",
   "main": "index.js",
   "scripts": {
@@ -39,5 +39,8 @@
     "grunt-mocha-test": "~0.13.2",
     "mocha": "~3.2.0",
     "tenso": "^5.2.2"
+  },
+  "dependencies": {
+    "btoa": "^1.1.2"
   }
 }
