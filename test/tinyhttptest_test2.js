@@ -8,9 +8,7 @@ const tenso = require("tenso"),
 			"/": "Hello world!"
 		},
 		"post": {
-			"/": (req, res) => {
-				res.send(req.body);
-			}
+			"/": (req, res) => res.send(req.body)
 		}
 	};
 
@@ -21,7 +19,7 @@ tenso({
 	port: port,
 	routes: routes,
 	logging: {
-		level: "error"
+		level: "info"
 	},
 	ssl: {
 		key: path.join(__dirname, "..", "ssl", "localhost.key"),
@@ -46,7 +44,7 @@ describe("Implicit proofs (HTTP2)", function () {
 			.expectValue("status", 200)
 			.end();
 	});
-
+/*
 	it("HEAD / (reuses cookie)", function () {
 		return tinyhttptest({http2: true, url: "https://localhost:" + port, timeout: timeout, method: "head"})
 			.cookies()
@@ -95,5 +93,5 @@ describe("Implicit proofs (HTTP2)", function () {
 			.expectValue("error", null)
 			.expectValue("status", 200)
 			.end();
-	});
+	});*/
 });

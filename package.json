@@ -38,7 +38,7 @@
     "grunt-eslint": "^20.1.0",
     "grunt-mocha-test": "~0.13.2",
     "mocha": "~3.2.0",
-    "tenso": "^5.2.2"
+    "tenso": "^6.3.2"
   },
   "dependencies": {
     "btoa": "^1.1.2"
