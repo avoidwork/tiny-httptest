@@ -19,7 +19,7 @@ tenso({
 	port: port,
 	routes: routes,
 	logging: {
-		level: "info"
+		level: "error"
 	},
 	ssl: {
 		key: path.join(__dirname, "..", "ssl", "localhost.key"),
