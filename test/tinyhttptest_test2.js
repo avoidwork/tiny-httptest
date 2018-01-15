@@ -44,7 +44,7 @@ describe("Implicit proofs (HTTP2)", function () {
 			.expectValue("status", 200)
 			.end();
 	});
-/*
+
 	it("HEAD / (reuses cookie)", function () {
 		return tinyhttptest({http2: true, url: "https://localhost:" + port, timeout: timeout, method: "head"})
 			.cookies()
@@ -54,7 +54,7 @@ describe("Implicit proofs (HTTP2)", function () {
 			.expectBody(/^$/)
 			.end();
 	});
-
+/*
 	it("POST / (reuses cookie, etag & CSRF token)", function () {
 		const body = "abc";
 
