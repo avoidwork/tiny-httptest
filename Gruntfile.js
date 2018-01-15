@@ -4,7 +4,7 @@ module.exports = function (grunt) {
 		eslint: {
 			target: [
 				"index.js",
-				"lib/tinyhttptest.js",
+				"lib/*.js",
 				"test/*.js"
 			]
 		},
@@ -13,7 +13,7 @@ module.exports = function (grunt) {
 				reporter: "spec"
 			},
 			test : {
-				src : ["test/*_test.js"]
+				src : ["test/*.js"]
 			}
 		},
 		watch : {
