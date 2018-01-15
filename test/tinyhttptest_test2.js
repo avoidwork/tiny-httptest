@@ -53,7 +53,7 @@ describe("Implicit proofs (HTTP2)", function () {
 			.expectHeader("content-length", 60)
 			.expectBody(/^$/)
 			.end();
-	});/*
+	});
 
 	it("POST / (reuses cookie, etag & CSRF token)", function () {
 		const body = "abc";
@@ -70,7 +70,7 @@ describe("Implicit proofs (HTTP2)", function () {
 			.expectValue("error", null)
 			.expectValue("status", 200)
 			.end();
-	});*/
+	});
 
 	it("GET / (CORS Pre-flight)", function () {
 		return tinyhttptest({http2: true, url: "https://localhost:" + port, method: "OPTIONS"})
