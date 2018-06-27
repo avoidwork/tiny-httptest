@@ -1,29 +1,32 @@
+"use strict";
+
 module.exports = function (grunt) {
 	grunt.initConfig({
-		pkg : grunt.file.readJSON("package.json"),
+		pkg: grunt.file.readJSON("package.json"),
 		eslint: {
 			target: [
+				"Gruntfile.js",
 				"index.js",
 				"lib/*.js",
 				"test/*.js"
 			]
 		},
-		mochaTest : {
+		mochaTest: {
 			options: {
 				reporter: "spec"
 			},
-			test : {
-				src : ["test/*.js"]
+			test: {
+				src: ["test/*.js"]
 			}
 		},
-		watch : {
-			js : {
-				files : ["index.js", "lib/tinyhttptest.js"],
-				tasks : "default"
+		watch: {
+			js: {
+				files: ["index.js", "lib/tinyhttptest.js"],
+				tasks: "default"
 			},
 			pkg: {
-				files : "package.json",
-				tasks : "default"
+				files: "package.json",
+				tasks: "default"
 			}
 		}
 	});
@@ -31,7 +34,7 @@ module.exports = function (grunt) {
 	// tasks
 	grunt.loadNpmTasks("grunt-eslint");
 	grunt.loadNpmTasks("grunt-mocha-test");
-	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks("grunt-contrib-watch");
 
 	// aliases
 	grunt.registerTask("test", ["eslint", "mochaTest"]);

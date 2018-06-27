@@ -7,7 +7,7 @@ const tenso = require("tenso"),
 		"get": {
 			"/": "Hello world!"
 		},
-		"post": {
+		post: {
 			"/": (req, res) => res.send(req.body)
 		}
 	};
@@ -31,7 +31,7 @@ describe("Implicit proofs (HTTP2)", function () {
 	this.timeout(timeout + 1000);
 
 	it("GET / (captures cookie, etag & CSRF token)", function () {
-		return tinyhttptest({http2: true, url: "https://localhost:" + port, timeout: timeout})
+		return tinyhttptest({http2: true, url: `https://localhost:${port}`, timeout: timeout})
 			.cookies()
 			.etags()
 			.expectStatus(200)
@@ -46,7 +46,7 @@ describe("Implicit proofs (HTTP2)", function () {
 	});
 
 	it("HEAD / (reuses cookie)", function () {
-		return tinyhttptest({http2: true, url: "https://localhost:" + port, timeout: timeout, method: "head"})
+		return tinyhttptest({http2: true, url: `https://localhost:${port}`, timeout: timeout, method: "head"})
 			.cookies()
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
@@ -58,7 +58,7 @@ describe("Implicit proofs (HTTP2)", function () {
 	it("POST / (reuses cookie, etag & CSRF token)", function () {
 		const body = "abc";
 
-		return tinyhttptest({http2: true, url: "https://localhost:" + port, timeout: timeout, method: "post"})
+		return tinyhttptest({http2: true, url: `https://localhost:${port}`, timeout: timeout, method: "post"})
 			.cookies()
 			.etags()
 			.json(body)
@@ -73,7 +73,7 @@ describe("Implicit proofs (HTTP2)", function () {
 	});
 
 	it("GET / (CORS Pre-flight)", function () {
-		return tinyhttptest({http2: true, url: "https://localhost:" + port, method: "OPTIONS"})
+		return tinyhttptest({http2: true, url: `https://localhost:${port}`, method: "OPTIONS"})
 			.cors("http://not.localhost:8001")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
@@ -82,7 +82,7 @@ describe("Implicit proofs (HTTP2)", function () {
 	});
 
 	it("GET / (CORS)", function () {
-		return tinyhttptest({http2: true, url: "https://localhost:" + port})
+		return tinyhttptest({http2: true, url: `https://localhost:${port}`})
 			.cors("http://not.localhost:8001")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")

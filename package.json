@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Lightweight HTTP compliant test framework",
   "main": "index.js",
   "scripts": {
@@ -32,15 +32,15 @@
   },
   "homepage": "https://github.com/avoidwork/tiny-httptest",
   "devDependencies": {
-    "grunt": "~1.0.1",
-    "grunt-cli": "~1.2.0",
-    "grunt-contrib-watch": "~1.0.0",
-    "grunt-eslint": "^20.1.0",
-    "grunt-mocha-test": "~0.13.2",
-    "mocha": "~3.2.0",
-    "tenso": "^6.3.4"
+    "grunt": "^1.0.3",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-eslint": "^21.0.0",
+    "grunt-mocha-test": "^0.13.3",
+    "mocha": "^5.2.0",
+    "tenso": "^7.0.14"
   },
   "dependencies": {
-    "btoa": "^1.1.2"
+    "btoa": "^1.2.1"
   }
 }
