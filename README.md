@@ -1,5 +1,5 @@
-# tiny-httptest
-### Lightweight HTTP compliant test framework
+# Tiny HTTP Test
+### Lightweight HTTP/HTTP2 compliant test framework
 tiny-httptest makes it easy to validate CORS is working, capture cookies & HTTP response headers (including etags) and reuse them for sequential tests.
 
 [![build status](https://secure.travis-ci.org/avoidwork/tiny-httptest.svg)](http://travis-ci.org/avoidwork/tiny-httptest)
