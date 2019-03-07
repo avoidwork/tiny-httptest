@@ -48,10 +48,12 @@ _TinyHTTPTest_
 
 Enables or disables cookie capture & reuse.
 
-**cors([hostname])**
+**cors([hostname, success = true])**
 _TinyHTTPTest_
 
 Sets request & response header expectations, defaults to request `hostname` if optional argument is not supplied.
+
+If testing an error case, you must specify the second parameter as `false` to not expect CORS headers.
 
 **end()**
 _Promise_
