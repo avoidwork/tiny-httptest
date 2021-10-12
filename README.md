@@ -1,5 +1,5 @@
 # Tiny HTTP Test
-### Lightweight HTTP/HTTP2 compliant test framework
+### Lightweight HTTP compliant test framework
 tiny-httptest makes it easy to validate CORS is working, capture cookies & HTTP response headers (including etags) and reuse them for sequential tests.
 
 [![build status](https://secure.travis-ci.org/avoidwork/tiny-httptest.svg)](http://travis-ci.org/avoidwork/tiny-httptest)
@@ -24,9 +24,6 @@ _*(Mixed)*_ HTTP request body, defaults to `null` but can be `String`, `Object` 
 
 #### headers
 _*(Object)*_ HTTP request headers, defaults to `{}`.
-
-#### http2
-_*(Boolean)*_ Enables HTTP2 requests, defaults to `false`.
 
 #### method
 _*(String)*_ HTTP request method, defaults to `GET`.
@@ -111,5 +108,5 @@ Decorates `arg` as request body & sets request headers.
  Validates that `arg` is equal to or passes `value` test, throws `Error` with `err` as message if invalid.
 
 ## License
-Copyright (c) 2019 Jason Mulligan
+Copyright (c) 2021 Jason Mulligan
 Licensed under the BSD-3 license.

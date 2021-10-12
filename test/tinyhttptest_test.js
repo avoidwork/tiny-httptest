@@ -72,7 +72,7 @@ describe("Implicit proofs", function () {
 	it("GET / (CORS Pre-flight)", function () {
 		return tinyhttptest({url: `http://localhost:${port}`, method: "OPTIONS"})
 			.cors("http://not.localhost:8001")
-			.expectStatus(204)
+			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
 			.expectHeader("content-length", undefined)
 			.end();
