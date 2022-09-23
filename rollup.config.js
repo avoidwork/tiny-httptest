@@ -21,9 +21,10 @@ const minOutBase = {banner: bannerShort, name: pkg.name, plugins: [json(), terse
 
 export default {
 	external: [
-		"murmurhash3js",
+		"node:http",
+		"node:module",
 		"node:url",
-		"tiny-lru"
+		"tiny-coerce"
 	],
 	input: "./src/httptest.js",
 	output: [
