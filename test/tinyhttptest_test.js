@@ -1,7 +1,7 @@
-const tenso = require("tenso"),
-	path = require("path"),
-	tinyhttptest = require(path.join(__dirname, "..", "index.js")),
-	port = 8000,
+import tenso from "tenso";
+import {httptest} from "../dist/tiny-httptest.esm.js";
+
+const port = 8000,
 	timeout = 5000,
 	routes = {
 		"get": {
@@ -28,7 +28,7 @@ describe("Implicit proofs", function () {
 	this.timeout(timeout + 1000);
 
 	it("GET / (captures cookie, etag & CSRF token)", function () {
-		return tinyhttptest({url: `http://localhost:${port}`, timeout: timeout})
+		return httptest({url: `http://localhost:${port}`, timeout: timeout})
 			.cookies()
 			.etags()
 			.expectStatus(200)
@@ -43,7 +43,7 @@ describe("Implicit proofs", function () {
 	});
 
 	it("HEAD / (reuses cookie)", function () {
-		return tinyhttptest({url: `http://localhost:${port}`, timeout: timeout, method: "head"})
+		return httptest({url: `http://localhost:${port}`, timeout: timeout, method: "head"})
 			.cookies()
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
@@ -55,7 +55,7 @@ describe("Implicit proofs", function () {
 	it("POST / (reuses cookie, etag & CSRF token)", function () {
 		const body = "abc";
 
-		return tinyhttptest({url: `http://localhost:${port}`, timeout: timeout, method: "post"})
+		return httptest({url: `http://localhost:${port}`, timeout: timeout, method: "post"})
 			.cookies()
 			.etags()
 			.json(body)
@@ -70,7 +70,7 @@ describe("Implicit proofs", function () {
 	});
 
 	it("GET / (CORS Pre-flight)", function () {
-		return tinyhttptest({url: `http://localhost:${port}`, method: "OPTIONS"})
+		return httptest({url: `http://localhost:${port}`, method: "OPTIONS"})
 			.cors("http://not.localhost:8001")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
@@ -79,7 +79,7 @@ describe("Implicit proofs", function () {
 	});
 
 	it("GET / (CORS)", function () {
-		return tinyhttptest({url: `http://localhost:${port}`})
+		return httptest({url: `http://localhost:${port}`})
 			.cors("http://not.localhost:8001")
 			.expectStatus(200)
 			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
@@ -90,5 +90,9 @@ describe("Implicit proofs", function () {
 			.expectValue("error", null)
 			.expectValue("status", 200)
 			.end();
+	});
+
+	it("It is done", function () {
+		process.exit(0);
 	});
 });
