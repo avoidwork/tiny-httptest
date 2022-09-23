@@ -1,9 +1,8 @@
-/node_modules/
-/ssl/
-/test/
+node_modules
+src
+ssl
+test
 .idea
 .git
 .gitignore
 .eslintrc
-.travis.yml
-Gruntfile.js

@@ -1,18 +1,24 @@
-"use strict";
+/**
+ * tiny-httptest
+ *
+ * @copyright 2022 Jason Mulligan <jason.mulligan@avoidwork.com>
+ * @license BSD-3-Clause
+ * @version 2.0.0
+ */
+import http from'node:http';import {URL}from'node:url';import {coerce}from'tiny-coerce';import {createRequire}from'node:module';const headersGet = /GET\, HEAD\, OPTIONS/;
+const headersContentType = /(, )?content-type(, )?/;
+const maybeJsonHeader = /^(application\/(json|(x-)?javascript)|text\/(javascript|x-javascript|x-json))/;
+const notEmpty = /\w+/;
+const quoted = /^".*"$/;const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
+const {homepage, version} = pkg;
 
-const http = require("http"),
-	{URL} = require("url"),
-	path = require("path"),
-	btoa = require("btoa"),
-	coerce = require("tiny-coerce"),
-	regex = require(path.join(__dirname, "regex.js")),
-	{homepage, version} = require(path.join(__dirname, "..", "package.json")),
-	jar = new Map(),
-	captured = new Map(),
-	etags = new Map(),
-	jsonMimetype = "application/json";
+const jar = new Map();
+const captured = new Map();
+const etags = new Map();
+const jsonMimetype = "application/json";
 
-class TinyHTTPTest {
+class Httptest {
 	constructor (uri, method, headers, body, timeout) {
 		const parsed = new URL(uri);
 
@@ -77,14 +83,14 @@ class TinyHTTPTest {
 		this.options.headers["access-control-request-headers"] = "content-type";
 
 		if (success) {
-			this.expectHeader("access-control-allow-methods", regex.headersGet);
+			this.expectHeader("access-control-allow-methods", headersGet);
 			this.expectHeader("access-control-allow-origin", origin);
 			this.expectHeader("access-control-allow-credentials", "true");
 
 			if (this.options.method === "OPTIONS") {
-				this.expectHeader("access-control-allow-headers", regex.headersContentType);
+				this.expectHeader("access-control-allow-headers", headersContentType);
 			} else {
-				this.expectHeader("access-control-expose-headers", regex.headersContentType);
+				this.expectHeader("access-control-expose-headers", headersContentType);
 			}
 		}
 
@@ -146,13 +152,13 @@ class TinyHTTPTest {
 		return this;
 	}
 
-	expectBody (value = regex.notEmpty) {
+	expectBody (value = notEmpty) {
 		this.expects.set("body", value);
 
 		return this;
 	}
 
-	expectHeader (name, value = regex.notEmpty) {
+	expectHeader (name, value = notEmpty) {
 		this.expects.get("headers").set(name.toLowerCase(), value);
 
 		return this;
@@ -161,7 +167,7 @@ class TinyHTTPTest {
 	expectJson () {
 		this.options.headers.accept = jsonMimetype;
 
-		return this.expectHeader("content-type", regex.maybeJsonHeader);
+		return this.expectHeader("content-type", maybeJsonHeader);
 	}
 
 	expectStatus (value = 200) {
@@ -223,11 +229,10 @@ class TinyHTTPTest {
 
 		this.expects.get("headers").forEach((v, k) => this.test(v, this.headers[k], this.warning("header", v, coerce(this.headers[k]), k)));
 
-		if (this.body && regex.maybeJsonHeader.test(this.headers["content-type"] || "")) {
+		if (this.body && maybeJsonHeader.test(this.headers["content-type"] || "")) {
 			try {
 				this.body = JSON.parse(this.body);
 			} catch (e) {
-				void 0;
 			}
 		}
 
@@ -276,13 +281,11 @@ class TinyHTTPTest {
 					this.options.headers["content-type"] = jsonMimetype;
 				}
 			} catch (e) {
-				void 0;
 			}
-		} else if (regex.quoted.test(body) === false) {
+		} else if (quoted.test(body) === false) {
 			try {
 				body = JSON.stringify(body);
 			} catch (e) {
-				void 0;
 			}
 		}
 
@@ -326,4 +329,12 @@ class TinyHTTPTest {
 	}
 }
 
-module.exports = TinyHTTPTest;
+function httptest ({url = "http://localhost", method = "GET", body = null, headers = {}, timeout = 30000, http2 = false} = {}) {
+	const type = method.toUpperCase();
+
+	if (http.METHODS.includes(type) === false) {
+		throw new Error("Invalid HTTP method");
+	}
+
+	return new Httptest(url, type, headers, body, timeout, http2);
+}export{httptest};
