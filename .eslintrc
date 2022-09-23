@@ -11,14 +11,7 @@
   },
   "globals": {
     "describe": "readonly",
-    "it": "readonly",
-    "after": "readonly",
-    "before": "readonly",
-    "beforeEach": "readonly",
-    "expect": "readonly",
-    "node:url": "readonly",
-    "tiny-lru": "readonly",
-    "murmurhash3js": "readonly"
+    "it": "readonly"
   },
   "rules": {
     "arrow-parens": [2, "as-needed"],
