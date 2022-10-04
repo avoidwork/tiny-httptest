@@ -16,7 +16,7 @@ const port = 8000,
 
 process.setMaxListeners(0);
 
-tenso({
+const app = tenso({
 	port: port,
 	routes: routes,
 	logging: {
@@ -92,7 +92,7 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("It is done", function () {
-		process.exit(0);
+	it("It shutdowns down", function (done) {
+		app.server.close(() => done());
 	});
 });

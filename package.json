@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Lightweight HTTP compliant test framework",
   "source": "src/httptest.js",
   "main": "dist/tiny-httptest.cjs",
@@ -55,11 +55,11 @@
     "rollup": "^2.79.0",
     "rollup-plugin-terser": "^7.0.2",
     "tenso": "^16.2.4",
-    "tiny-coerce": "^2.0.0",
-    "tiny-httptest": "^2.0.0",
+    "tiny-httptest": "^3.0.0",
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "btoa": "^1.2.1"
+    "btoa": "^1.2.1",
+    "tiny-coerce": "^2.0.0"
   }
 }
