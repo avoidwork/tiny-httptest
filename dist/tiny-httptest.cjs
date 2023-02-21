@@ -1,7 +1,7 @@
 /**
  * tiny-httptest
  *
- * @copyright 2022 Jason Mulligan <jason.mulligan@avoidwork.com>
+ * @copyright 2023 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
  * @version 3.0.3
  */
@@ -10,6 +10,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var http = require('node:http');
+var https = require('node:https');
 var node_url = require('node:url');
 var tinyCoerce = require('tiny-coerce');
 var node_module = require('node:module');
@@ -17,6 +18,7 @@ var node_module = require('node:module');
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
+var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
 
 const headersGet = /GET\, HEAD\, OPTIONS/;
 const headersContentType = /(, )?content-type(, )?/;
@@ -200,7 +202,7 @@ class Httptest {
 
 	http1Request () {
 		return new Promise((resolve, reject) => {
-			this.req = http__default["default"].request(this.options, res => {
+			this.req = (this.options.protocol === "http:" ? http__default["default"] : https__default["default"]).request(this.options, res => {
 				this.res = res;
 				res.setEncoding("utf8");
 
