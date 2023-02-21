@@ -92,6 +92,12 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
+	it("GET https://google.com/ (HTTPS)", function () {
+		return httptest({url: "https://google.com/", timeout: timeout})
+			.expectStatus(301)
+			.end();
+	});
+
 	it("It shutdowns down", function (done) {
 		app.server.close(() => done());
 	});
