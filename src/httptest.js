@@ -1,4 +1,5 @@
 import http from "node:http";
+import https from "node:https";
 import {URL} from "node:url";
 import {coerce} from "tiny-coerce";
 import {
@@ -186,7 +187,7 @@ class Httptest {
 
 	http1Request () {
 		return new Promise((resolve, reject) => {
-			this.req = http.request(this.options, res => {
+			this.req = (this.options.protocol === "http:" ? http : https).request(this.options, res => {
 				this.res = res;
 				res.setEncoding("utf8");
 
