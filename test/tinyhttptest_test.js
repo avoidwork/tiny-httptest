@@ -1,5 +1,5 @@
 import tenso from "tenso";
-import {httptest} from "../dist/tiny-httptest.esm.js";
+import {httptest} from "../dist/tiny-httptest.cjs";
 
 const port = 8000,
 	timeout = 5000,

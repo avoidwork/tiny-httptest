@@ -1,24 +1,28 @@
 {
   "name": "tiny-httptest",
-  "version": "3.0.4",
-  "description": "Lightweight HTTP compliant test framework",
-  "source": "src/httptest.js",
-  "main": "dist/tiny-httptest.cjs",
-  "module": "dist/tiny-httptest.esm.js",
+  "version": "4.0.0",
+  "description": "Lightweight HTTP test framework",
   "type": "module",
-  "sourceType": "module",
   "types": "types/httptest.d.ts",
+  "source": "src/httptest.js",
+  "main": "dist/tiny-httptest",
+  "exports": {
+    "types": "./types/httptest.d.ts",
+    "import": "./dist/tiny-httptest.js",
+    "require": "./dist/tiny-httptest.cjs"
+  },
   "files": [
     "dist",
     "types"
   ],
   "scripts": {
-    "build": "npm run lint && rm -rf dist/* && npm run rollup",
+    "build": "rm -rf dist && npm run rollup",
     "changelog": "auto-changelog -p",
+    "fix": "eslint --fix *.js src/*.js test/*.js",
     "lint": "eslint *.js src/*.js test/*.js",
-    "mocha": "mocha test/*.js",
+    "mocha": "nyc mocha test/*.js",
     "rollup": "rollup --config",
-    "test": "npm run lint && npm run mocha",
+    "test": "npm run lint && npm run build && npm run mocha",
     "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types"
   },
   "repository": {
@@ -47,16 +51,16 @@
   },
   "homepage": "https://github.com/avoidwork/tiny-httptest",
   "devDependencies": {
-    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-json": "^6.0.0",
     "auto-changelog": "^2.4.0",
-    "eslint": "^8.24.0",
-    "mocha": "^10.0.0",
-    "precise": "^2.0.0",
-    "rollup": "^2.79.1",
-    "rollup-plugin-terser": "^7.0.2",
+    "eslint": "^8.50.0",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "precise": "^2.0.1",
+    "rollup": "^3.29.3",
     "tenso": "^16.2.4",
-    "tiny-httptest": "^3.0.2",
-    "typescript": "^4.8.4"
+    "tiny-httptest": "^3.0.4",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "btoa": "^1.2.1",

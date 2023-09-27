@@ -3,11 +3,9 @@
  *
  * @copyright 2023 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
- * @version 3.0.4
+ * @version 4.0.0
  */
 'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
 
 var http = require('node:http');
 var https = require('node:https');
@@ -15,18 +13,14 @@ var node_url = require('node:url');
 var tinyCoerce = require('tiny-coerce');
 var node_module = require('node:module');
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var http__default = /*#__PURE__*/_interopDefaultLegacy(http);
-var https__default = /*#__PURE__*/_interopDefaultLegacy(https);
-
+var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
 const headersGet = /GET\, HEAD\, OPTIONS/;
 const headersContentType = /(, )?content-type(, )?/;
 const maybeJsonHeader = /^(application\/(json|(x-)?javascript)|text\/(javascript|x-javascript|x-json))/;
 const notEmpty = /\w+/;
 const quoted = /^".*"$/;
 
-const require$1 = node_module.createRequire((typeof document === 'undefined' ? new (require('u' + 'rl').URL)('file:' + __filename).href : (document.currentScript && document.currentScript.src || new URL('tiny-httptest.cjs', document.baseURI).href)));
+const require$1 = node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('tiny-httptest.cjs', document.baseURI).href)));
 const pkg = require$1("../package.json");
 const {homepage, version} = pkg;
 
@@ -202,7 +196,7 @@ class Httptest {
 
 	http1Request () {
 		return new Promise((resolve, reject) => {
-			this.req = (this.options.protocol === "http:" ? http__default["default"] : https__default["default"]).request(this.options, res => {
+			this.req = (this.options.protocol === "http:" ? http : https).request(this.options, res => {
 				this.res = res;
 				res.setEncoding("utf8");
 
@@ -349,7 +343,7 @@ class Httptest {
 function httptest ({url = "http://localhost", method = "GET", body = null, headers = {}, timeout = 30000, http2 = false} = {}) {
 	const type = method.toUpperCase();
 
-	if (http__default["default"].METHODS.includes(type) === false) {
+	if (http.METHODS.includes(type) === false) {
 		throw new Error("Invalid HTTP method");
 	}
 
