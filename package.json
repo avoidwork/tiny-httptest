@@ -24,7 +24,7 @@
     "rollup": "rollup --config",
     "test": "npm run lint && npm run build && npm run mocha",
     "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types",
-    "postinstall": "mkdir test/www || mkdir .\\test\\www && cp -a node_modules/tenso/www/* test/www/ || xcopy -E .\\node_modules\\tenso\\www\\* .\\test\\www\\",
+    "postinstall": "mkdir test/www || mkdir .\\test\\www && cp -r node_modules/tenso/www/* test/www/",
     "prepare": "husky install"
   },
   "repository": {
@@ -60,7 +60,7 @@
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "precise": "^2.0.1",
-    "rollup": "^3.29.3",
+    "rollup": "^3.29.4",
     "tenso": "^16.2.4",
     "tiny-httptest": "^3.0.4",
     "typescript": "^5.2.2"
