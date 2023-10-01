@@ -16,16 +16,23 @@ const port = 8000,
 
 process.setMaxListeners(0);
 
-const app = tenso({
-	port: port,
-	routes: routes,
-	logging: {
-		level: "error"
-	}
-});
-
 describe("Implicit proofs", function () {
-	this.timeout(timeout + 1000);
+	beforeEach(() => {
+		this.timeout(timeout + 1000);
+	});
+
+	let app;
+
+	it("Starting test server", function (done) {
+		app = tenso({
+			port: port,
+			routes: routes,
+			logging: {
+				level: "error"
+			}
+		});
+		done();
+	});
 
 	it("GET / (captures cookie, etag & CSRF token)", function () {
 		return httptest({url: `http://localhost:${port}`, timeout: timeout})
@@ -69,6 +76,23 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
+	it("POST / (reuses cookie, etag & CSRF token + body)", function () {
+		const body = "abc";
+
+		return httptest({url: `http://localhost:${port}`, timeout: timeout, method: "post", body: JSON.stringify({abc: true})})
+			.cookies()
+			.etags()
+			.json(body)
+			.reuseHeader("x-csrf-token")
+			.expectStatus(200)
+			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectValue("links", arg => arg.length === 0)
+			.expectValue("data", body)
+			.expectValue("error", null)
+			.expectValue("status", 200)
+			.end();
+	});
+
 	it("GET / (CORS Pre-flight)", function () {
 		return httptest({url: `http://localhost:${port}`, method: "OPTIONS"})
 			.cors("http://not.localhost:8001")
@@ -92,13 +116,63 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
+	it("GET / (Basic Auth)", function () {
+		return httptest({url: `http://user:pass@localhost:${port}`})
+			.cors("http://not.localhost:8001")
+			.expectStatus(200)
+			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectHeader("content-type", "application/json")
+			.expectHeader("content-length", 60)
+			.expectValue("links", [])
+			.expectValue("data", routes.get["/"])
+			.expectValue("error", null)
+			.expectValue("status", 200)
+			.end();
+	});
+
 	it("GET https://google.com/ (HTTPS)", function () {
 		return httptest({url: "https://google.com/", timeout: timeout})
 			.expectStatus(301)
 			.end();
 	});
 
-	it("It shutdowns down", function (done) {
+	it("Stopping test server", function (done) {
+		app.server.close(() => done());
+	});
+});
+
+describe("Error proofs", function () {
+	beforeEach(() => {
+		this.timeout(timeout + 1000);
+	});
+
+	let app;
+
+	it("Starting test server", function (done) {
+		app = tenso({
+			port: port,
+			routes: routes,
+			logging: {
+				level: "error"
+			}
+		});
+		done();
+	});
+
+	it("GET https://invalid.local.dev/ (DNS error)", function () {
+		return httptest({url: "https://invalid.local.dev/", timeout: timeout})
+			.end();
+	});
+
+	it("GET / (Error thrown)", function () {
+		return httptest({url: `http://localhost:${port}`, timeout: timeout})
+			.expectBody(() => {
+				throw new Error("Test error");
+			})
+			.end();
+	});
+
+	it("Stopping test server", function (done) {
 		app.server.close(() => done());
 	});
 });
