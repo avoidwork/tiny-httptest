@@ -112,37 +112,31 @@ class Httptest {
 				}
 			};
 
-			if (!this.req) {
-				const cmd = this.http1Request;
+			if (this.jar) {
+				const cookie = jar.get(`${this.options.hostname}:${this.options.port}`);
 
-				if (this.jar) {
-					const cookie = jar.get(`${this.options.hostname}:${this.options.port}`);
-
-					if (cookie) {
-						this.options.headers.cookie = cookie;
-					}
+				if (cookie) {
+					this.options.headers.cookie = cookie;
 				}
-
-				if (this.etag) {
-					const etag = etags.get(`${this.options.hostname}:${this.options.port}${this.options.path}`);
-
-					if (etag) {
-						this.options.headers["if-none-match"] = etag;
-					}
-				}
-
-				if (this.reuse.size > 0) {
-					this.reuse.forEach(k => {
-						if (captured.has(k)) {
-							this.options.headers[k] = captured.get(k);
-						}
-					});
-				}
-
-				cmd.call(this).then(() => done(), done);
-			} else {
-				done();
 			}
+
+			if (this.etag) {
+				const etag = etags.get(`${this.options.hostname}:${this.options.port}${this.options.path}`);
+
+				if (etag) {
+					this.options.headers["if-none-match"] = etag;
+				}
+			}
+
+			if (this.reuse.size > 0) {
+				this.reuse.forEach(k => {
+					if (captured.has(k)) {
+						this.options.headers[k] = captured.get(k);
+					}
+				});
+			}
+
+			this.request().then(() => done(), done);
 		});
 	}
 
@@ -181,29 +175,6 @@ class Httptest {
 		this.expects.get("values").set(name, value);
 
 		return this;
-	}
-
-	http1Request () {
-		return new Promise((resolve, reject) => {
-			this.req = (this.options.protocol === "http:" ? http : https).request(this.options, res => {
-				this.res = res;
-				res.setEncoding("utf8");
-
-				res.on("data", chunk => {
-					this.body += chunk;
-				});
-
-				res.on("end", resolve);
-			});
-
-			this.req.on("error", reject);
-
-			if (this.options.body) {
-				this.req.write(this.options.body);
-			}
-
-			this.req.end();
-		});
 	}
 
 	json (arg = undefined) {
@@ -259,6 +230,29 @@ class Httptest {
 		}
 
 		return this;
+	}
+
+	request () {
+		return new Promise((resolve, reject) => {
+			this.req = (this.options.protocol === "http:" ? http : https).request(this.options, res => {
+				this.res = res;
+				res.setEncoding("utf8");
+
+				res.on("data", chunk => {
+					this.body += chunk;
+				});
+
+				res.on("end", resolve);
+			});
+
+			this.req.on("error", reject);
+
+			if (this.options.body) {
+				this.req.write(this.options.body);
+			}
+
+			this.req.end();
+		});
 	}
 
 	reuseHeader (name) {

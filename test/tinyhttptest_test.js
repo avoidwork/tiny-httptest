@@ -1,8 +1,8 @@
 import tenso from "tenso";
 import {join} from "path";
 import {httptest} from "../dist/tiny-httptest.cjs";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const port = 8000,
 	timeout = 5000,
