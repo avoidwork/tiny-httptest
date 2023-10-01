@@ -24,7 +24,8 @@
     "rollup": "rollup --config",
     "test": "npm run lint && npm run build && npm run mocha",
     "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types",
-    "postinstall": "mkdir test/www || mkdir .\\test\\www && cp -a node_modules/tenso/www/* test/www/ || xcopy -E .\\node_modules\\tenso\\www\\* .\\test\\www\\"
+    "postinstall": "mkdir test/www || mkdir .\\test\\www && cp -a node_modules/tenso/www/* test/www/ || xcopy -E .\\node_modules\\tenso\\www\\* .\\test\\www\\",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -55,6 +56,7 @@
     "@rollup/plugin-json": "^6.0.0",
     "auto-changelog": "^2.4.0",
     "eslint": "^8.50.0",
+    "husky": "^8.0.3",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "precise": "^2.0.1",
