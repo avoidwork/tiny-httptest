@@ -18,7 +18,7 @@ const captured = new Map();
 const etags = new Map();
 const jsonMimetype = "application/json";
 
-class Httptest {
+class HTTPTest {
 	constructor (uri, method, headers, body, timeout) {
 		const parsed = new URL(uri);
 
@@ -330,5 +330,5 @@ function httptest ({url = "http://localhost", method = "GET", body = null, heade
 		throw new Error("Invalid HTTP method");
 	}
 
-	return new Httptest(url, type, headers, body, timeout, http2);
-}export{httptest};
+	return new HTTPTest(url, type, headers, body, timeout, http2);
+}export{HTTPTest,httptest};

@@ -1,109 +1,135 @@
 # Tiny HTTP Test
-### Lightweight HTTP test framework
-tiny-httptest makes it easy to validate CORS is working, capture cookies & HTTP response headers (including etags) and reuse them for sequential tests.
 
-## Example
+tiny-httptest is a lightweight HTTP test framework that makes it easy to validate CORS is working, capture cookies & HTTP response headers (including etags) and reuse them for sequential tests.
+
+## Using the factory
+
 ```javascript
 import {httptest} from "tiny-httptest";
 
-// Simulating CORS request to localhost:8000
-httptest({url:"http://localhost:8000", method: "OPTIONS"})
-	.cors("http://not.localhost:8001")
-	.end()
-	.then(() => httptest({url:"http://localhost:8000"}).cors("http://not.localhost:8001").expectJson().end())
-	.then(() => console.log("CORS is working"))
-	.catch(e => console.error(`CORS is not working: ${e.message}`));
+describe('HTTP Tests', () => {
+ it("GET /somefile (Captured the etag)", function () {
+  return httptest({url: `http://localhost:${port}/somefile`})
+          .etags()
+          .expectStatus(200)
+          .end();
+ });
+
+ it("GET /somefile (Reused the ETag)", function () {
+  return httptest({url: `http://localhost:${port}/somefile`})
+          .etags()
+          .expectStatus(304)
+          .end();
+ });
+
+ it("GET /invalid-file", function () {
+  return httptest({url: `http://localhost:${port}/invalid-file`})
+          .expectStatus(404)
+          .end();
+ });
+});
 ```
-## Configuration
 
-#### body
-_*(Mixed)*_ HTTP request body, defaults to `null` but can be `String`, `Object` or `Array`.
+## Using the Class
 
-#### headers
-_*(Object)*_ HTTP request headers, defaults to `{}`.
+```javascript
+import {HTTPTest} from "tiny-httptest";
+class MyTestRunner extends HTTPTest {}
+```
 
-#### method
-_*(String)*_ HTTP request method, defaults to `GET`.
+## Testing
 
-#### timeout
-_*(Number)*_ HTTP request timeout as milliseconds, defaults to `30000`.
+Tiny HTTP Test has 100% code coverage with its tests.
 
-#### url
-_*(String)*_ URL & port to request, defaults to `http://localhost`.
+```console
+-------------------|---------|----------|---------|---------|--------------------------------------------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|--------------------------------------------------------
+All files          |     100 |     81.3 |     100 |     100 |                                                       
+ tiny-httptest.cjs |     100 |     81.3 |     100 |     100 | 16-23,77,91-96,144,160,178-194,214,229,270,285-290,337
+-------------------|---------|----------|---------|---------|--------------------------------------------------------
+```
+
+## Options
+
+### body
+
+HTTP request body, defaults to `null` but can be `String`, `Object` or `Array`.
+
+### headers
+
+HTTP request headers, defaults to `{}`.
+
+### method
+
+HTTP request method, defaults to `GET`.
+
+### timeout
+HTTP request timeout as milliseconds, defaults to `30000`.
+
+### url
+URL & port to request, defaults to `http://localhost`.
 
 ## API
-**captureHeader(name)**
-_TinyHTTPTest_
+
+### captureHeader(name)
 
 Captures a header to be reused by another instance of `TinyHTTPTest`.
 
-**cookies([state = true])**
-_TinyHTTPTest_
+### cookies([state = true])
 
 Enables or disables cookie capture & reuse.
 
-**cors([hostname, success = true])**
-_TinyHTTPTest_
+### cors([hostname, success = true])
 
 Sets request & response header expectations, defaults to request `hostname` if optional argument is not supplied.
 
 If testing an error case, you must specify the second parameter as `false` to not expect CORS headers.
 
-**end()**
-_Promise_
+### end()
 
 Ends the request, `Promise` resolves with `TinyHTTPTest` instance or rejects with `Error`.
 
-**etags([state = true])**
-_TinyHTTPTest_
+### etags([state = true])
 
 Enables or disables ETag capture & reuse.
 
-**expectBody([value = /\w+/])**
-_TinyHTTPTest_
+### expectBody([value = /\w+/])
 
 Sets an expectation of the response body, default value is a `RegExp` which tests if there is a response body.
 
-**expectHeader(name, [value = /\w+/])**
-_TinyHTTPTest_
+### expectHeader(name, [value = /\w+/])
 
 Sets an expectation of a response header, default value is a `RegExp` which tests if there is a header value.
 
-**expectJson()**
-_TinyHTTPTest_
+### expectJson()
 
 Sets an expectation of response header `content-type`, supports correct and common incorrect header values.
 
-**expectStatus([value = 200])**
-_TinyHTTPTest_
+### expectStatus([value = 200])
 
 Sets an expectation of response status code, default value is `200`.
 
-**json([arg])**
-_TinyHTTPTest_
+### json([arg])
 
 Sets request & response to `JSON`, sends `arg` if not `undefined`.
 
-**process**
-_TinyHTTPTest_
+### process()
 
 Processes the response of the `TinyHTTPTest` instance.
 
-**reuseHeader(name)**
-_TinyHTTPTest_
+### reuseHeader(name)
 
 Reuses a captured header from another instance of `TinyHTTPTest`.
 
-**send(arg)**
-_TinyHTTPTest_
+### send(arg)
 
 Decorates `arg` as request body & sets request headers.
+
+### test(arg, value, err)
  
- **test(arg, value, err)**
- _TinyHTTPTest_
- 
- Validates that `arg` is equal to or passes `value` test, throws `Error` with `err` as message if invalid.
+Validates that `arg` is equal to or passes `value` test, throws `Error` with `err` as message if invalid.
 
 ## License
-Copyright (c) 2022 Jason Mulligan
+Copyright (c) 2023 Jason Mulligan
 Licensed under the BSD-3 license.

@@ -1,7 +1,8 @@
+import {join} from "node:path";
+import assert from "node:assert";
+import * as url from "node:url";
 import tenso from "tenso";
-import {join} from "path";
 import {httptest} from "../dist/tiny-httptest.cjs";
-import * as url from "url";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const port = 8000,
@@ -196,6 +197,14 @@ describe("Error proofs", function () {
 			.end().catch(() => true);
 	});
 
+	it("INVALID / (Invalid HTTP method)", function () {
+		try {
+			httptest({url: `http://localhost:${port}/`, method: "invalid", timeout: timeout});
+		} catch (e) {
+			assert.strictEqual(e.message, "Invalid HTTP method");
+		}
+	});
+
 	it("GET /hello (Error thrown)", function () {
 		return httptest({url: `http://localhost:${port}/hello`, timeout: timeout})
 			.expectBody(() => {
@@ -205,7 +214,7 @@ describe("Error proofs", function () {
 	});
 
 	it("GET /assets/css/style.css (Invalid 404)", function () {
-		return httptest({url: `http://localhost:${port}/assets/css/style.css`})
+		return httptest({url: `http://localhost:${port}/assets/css/style.css`, timeout: timeout})
 			.etags()
 			.expectStatus(404)
 			.end().catch(() => true);
