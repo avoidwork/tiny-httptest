@@ -1,5 +1,6 @@
 import http from "node:http";
 import https from "node:https";
+import { createRequire } from "node:module";
 import {URL} from "node:url";
 import {coerce} from "tiny-coerce";
 import {
@@ -10,11 +11,9 @@ import {
 	quoted
 } from "./regex.js";
 
-import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
 const {homepage, version} = pkg;
-
 const jar = new Map();
 const captured = new Map();
 const etags = new Map();
@@ -28,12 +27,10 @@ export class HTTPTest {
 		this.capture = new Set();
 		this.etag = false;
 		this.expects = new Map();
-
 		this.expects.set("status", 0);
 		this.expects.set("body", "");
 		this.expects.set("headers", new Map());
 		this.expects.set("values", new Map());
-
 		this.headers = {};
 		this.options = {
 			body: body,

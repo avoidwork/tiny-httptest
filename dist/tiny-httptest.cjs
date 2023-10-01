@@ -9,9 +9,9 @@
 
 var http = require('node:http');
 var https = require('node:https');
+var node_module = require('node:module');
 var node_url = require('node:url');
 var tinyCoerce = require('tiny-coerce');
-var node_module = require('node:module');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
 const headersGet = /GET\, HEAD\, OPTIONS/;
@@ -23,7 +23,6 @@ const quoted = /^".*"$/;
 const require$1 = node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('tiny-httptest.cjs', document.baseURI).href)));
 const pkg = require$1("../package.json");
 const {homepage, version} = pkg;
-
 const jar = new Map();
 const captured = new Map();
 const etags = new Map();
@@ -37,12 +36,10 @@ class HTTPTest {
 		this.capture = new Set();
 		this.etag = false;
 		this.expects = new Map();
-
 		this.expects.set("status", 0);
 		this.expects.set("body", "");
 		this.expects.set("headers", new Map());
 		this.expects.set("values", new Map());
-
 		this.headers = {};
 		this.options = {
 			body: body,

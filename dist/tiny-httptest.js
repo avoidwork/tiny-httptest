@@ -5,14 +5,13 @@
  * @license BSD-3-Clause
  * @version 4.0.0
  */
-import http from'node:http';import https from'node:https';import {URL}from'node:url';import {coerce}from'tiny-coerce';import {createRequire}from'node:module';const headersGet = /GET\, HEAD\, OPTIONS/;
+import http from'node:http';import https from'node:https';import {createRequire}from'node:module';import {URL}from'node:url';import {coerce}from'tiny-coerce';const headersGet = /GET\, HEAD\, OPTIONS/;
 const headersContentType = /(, )?content-type(, )?/;
 const maybeJsonHeader = /^(application\/(json|(x-)?javascript)|text\/(javascript|x-javascript|x-json))/;
 const notEmpty = /\w+/;
 const quoted = /^".*"$/;const require = createRequire(import.meta.url);
 const pkg = require("../package.json");
 const {homepage, version} = pkg;
-
 const jar = new Map();
 const captured = new Map();
 const etags = new Map();
@@ -26,12 +25,10 @@ class HTTPTest {
 		this.capture = new Set();
 		this.etag = false;
 		this.expects = new Map();
-
 		this.expects.set("status", 0);
 		this.expects.set("body", "");
 		this.expects.set("headers", new Map());
 		this.expects.set("values", new Map());
-
 		this.headers = {};
 		this.options = {
 			body: body,
