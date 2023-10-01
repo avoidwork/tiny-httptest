@@ -23,7 +23,8 @@
     "mocha": "nyc mocha test/*.js",
     "rollup": "rollup --config",
     "test": "npm run lint && npm run build && npm run mocha",
-    "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types"
+    "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types",
+    "postinstall": "mkdir test/www || mkdir .\\test\\www && cp -a node_modules/tenso/www/* test/www/ || xcopy -E .\\node_modules\\tenso\\www\\* .\\test\\www\\"
   },
   "repository": {
     "type": "git",

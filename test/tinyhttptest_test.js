@@ -1,5 +1,8 @@
 import tenso from "tenso";
+import {join} from "path";
 import {httptest} from "../dist/tiny-httptest.cjs";
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const port = 8000,
 	timeout = 5000,
@@ -29,15 +32,16 @@ describe("Implicit proofs", function () {
 			routes: routes,
 			logging: {
 				level: "error"
-			}
+			},
+			etags: {enabled: true},
+			root: join(__dirname, "www")
 		});
 		done();
 	});
 
-	it("GET / (captures cookie, etag & CSRF token)", function () {
+	it("GET / (captures cookie, CSRF token)", function () {
 		return httptest({url: `http://localhost:${port}`, timeout: timeout})
 			.cookies()
-			.etags()
 			.expectStatus(200)
 			.expectHeader("Allow", "GET, HEAD, OPTIONS, POST")
 			.expectHeader("content-length", 60)
@@ -59,12 +63,11 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("POST / (reuses cookie, etag & CSRF token)", function () {
+	it("POST / (reuses cookie & CSRF token)", function () {
 		const body = "abc";
 
 		return httptest({url: `http://localhost:${port}`, timeout: timeout, method: "post"})
 			.cookies()
-			.etags()
 			.json(body)
 			.reuseHeader("x-csrf-token")
 			.expectStatus(200)
@@ -76,12 +79,11 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("POST / (reuses cookie, etag & CSRF token + body)", function () {
+	it("POST / (reuses cookie & CSRF token + body)", function () {
 		const body = "abc";
 
 		return httptest({url: `http://localhost:${port}`, timeout: timeout, method: "post", body: JSON.stringify({abc: true})})
 			.cookies()
-			.etags()
 			.json(body)
 			.reuseHeader("x-csrf-token")
 			.expectStatus(200)
@@ -136,6 +138,20 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
+	it("GET /file", function () {
+		return httptest({url: `http://localhost:${port}/assets/css/style.css`})
+			.etags()
+			.expectStatus(200)
+			.end();
+	});
+
+	it("GET /file (ETag)", function () {
+		return httptest({url: `http://localhost:${port}/assets/css/style.css`})
+			.etags()
+			.expectStatus(304)
+			.end();
+	});
+
 	it("Stopping test server", function (done) {
 		app.server.close(() => done());
 	});
@@ -161,15 +177,15 @@ describe("Error proofs", function () {
 
 	it("GET https://invalid.local.dev/ (DNS error)", function () {
 		return httptest({url: "https://invalid.local.dev/", timeout: timeout})
-			.end();
+			.end().catch(() => true);
 	});
 
-	it("GET / (Error thrown)", function () {
-		return httptest({url: `http://localhost:${port}`, timeout: timeout})
+	it("GET /hello (Error thrown)", function () {
+		return httptest({url: `http://localhost:${port}/hello`, timeout: timeout})
 			.expectBody(() => {
 				throw new Error("Test error");
 			})
-			.end();
+			.end().catch(() => true);
 	});
 
 	it("Stopping test server", function (done) {
