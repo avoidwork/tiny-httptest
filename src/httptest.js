@@ -2,46 +2,48 @@ import http from "node:http";
 import https from "node:https";
 import {URL} from "node:url";
 import {coerce} from "tiny-coerce";
+import {headersContentType, headersGet, maybeJsonHeader, notEmpty, quoted} from "./regex.js";
 import {
-	headersContentType,
-	headersGet,
-	maybeJsonHeader,
-	notEmpty,
-	quoted
-} from "./regex.js";
-import {
-	STATUS,
-	BODY,
-	HEADERS,
-	VALUES,
-	EMPTY,
-	USER_AGENT,
-	USER_AGENT_VALUE,
-	ACCESS_CONTROL_REQUEST_HEADERS,
-	CONTENT_TYPE,
-	ACCESS_CONTROL_ALLOW_ORIGIN,
-	ACCESS_CONTROL_ALLOW_METHODS,
-	ACCESS_CONTROL_ALLOW_HEADERS,
-	TRUE,
+	A,
 	ACCESS_CONTROL_ALLOW_CREDENTIALS,
-	OPTIONS,
+	ACCESS_CONTROL_ALLOW_HEADERS,
+	ACCESS_CONTROL_ALLOW_METHODS,
+	ACCESS_CONTROL_ALLOW_ORIGIN,
 	ACCESS_CONTROL_EXPOSE_HEADERS,
-	IF_NONE_MATCH,
-	HEADER,
-	SET_COOKIE,
-	DELIMITER,
-	HTTP,
-	UTF8,
+	ACCESS_CONTROL_REQUEST_HEADERS,
+	APPLICATION_JSON,
+	B,
+	BASIC,
+	BODY,
+	CONTENT_LENGTH,
+	CONTENT_TYPE,
 	DATA,
+	DELIMITER,
+	EMPTY,
 	END,
 	ERROR,
-	STRING,
-	CONTENT_LENGTH,
-	OBJECT,
 	GET,
-	TIMEOUT, LOCALHOST, INVALID_HTTP_METHOD, UNEXPECTED_TYPE_A_B, TYPE, A, B, BASIC, APPLICATION_JSON
+	HEADER,
+	HEADERS,
+	HTTP,
+	IF_NONE_MATCH,
+	INVALID_HTTP_METHOD,
+	LOCALHOST,
+	OBJECT,
+	OPTIONS,
+	SET_COOKIE,
+	STATUS,
+	STRING,
+	TIMEOUT,
+	TRUE,
+	TYPE,
+	UNEXPECTED_TYPE_A_B,
+	USER_AGENT,
+	USER_AGENT_VALUE,
+	UTF8,
+	VALUES
 } from "./constants.js";
-import {jar, captured, etags} from "./shared.js";
+import {captured, etags, jar} from "./shared.js";
 
 export class HTTPTest {
 	constructor (uri, method, headers, body, timeout) {
