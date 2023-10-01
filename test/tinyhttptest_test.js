@@ -138,14 +138,14 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
-	it("GET /file", function () {
+	it("GET /assets/css/style.css", function () {
 		return httptest({url: `http://localhost:${port}/assets/css/style.css`})
 			.etags()
 			.expectStatus(200)
 			.end();
 	});
 
-	it("GET /file (ETag)", function () {
+	it("GET /assets/css/style.css (ETag)", function () {
 		return httptest({url: `http://localhost:${port}/assets/css/style.css`})
 			.etags()
 			.expectStatus(304)
@@ -185,6 +185,13 @@ describe("Error proofs", function () {
 			.expectBody(() => {
 				throw new Error("Test error");
 			})
+			.end().catch(() => true);
+	});
+
+	it("GET /assets/css/style.css (Invalid 404)", function () {
+		return httptest({url: `http://localhost:${port}/assets/css/style.css`})
+			.etags()
+			.expectStatus(404)
 			.end().catch(() => true);
 	});
 
