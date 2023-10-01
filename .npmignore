@@ -1,8 +1,10 @@
 node_modules
 src
-ssl
 test
 .idea
 .git
 .gitignore
 .eslintrc
+.husky
+.nyc_output
+rollup.config.js
