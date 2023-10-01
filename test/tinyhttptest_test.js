@@ -95,6 +95,22 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
+	it("POST / (reuses cookie & CSRF token + body)", function () {
+		const body = "abc";
+
+		return httptest({url: `http://localhost:${port}`, timeout: timeout, method: "post", body: {abc: true}})
+			.cookies()
+			.json(body)
+			.reuseHeader("x-csrf-token")
+			.expectStatus(200)
+			.expectHeader("allow", "GET, HEAD, OPTIONS, POST")
+			.expectValue("links", arg => arg.length === 0)
+			.expectValue("data", body)
+			.expectValue("error", null)
+			.expectValue("status", 200)
+			.end();
+	});
+
 	it("GET / (CORS Pre-flight)", function () {
 		return httptest({url: `http://localhost:${port}`, method: "OPTIONS"})
 			.cors("http://not.localhost:8001")
