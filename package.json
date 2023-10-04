@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Lightweight HTTP test framework",
   "type": "module",
   "types": "types/httptest.d.ts",
@@ -24,8 +24,7 @@
     "rollup": "rollup --config",
     "test": "npm run lint && npm run build && npm run mocha",
     "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types",
-    "postinstall": "mkdir test/www || mkdir .\\test\\www && cp -r node_modules/tenso/www/* test/www/",
-    "prepare": "husky install"
+    "prepare": "husky install && mkdir test/www || mkdir .\\test\\www && cp -r node_modules/tenso/www/* test/www/"
   },
   "repository": {
     "type": "git",

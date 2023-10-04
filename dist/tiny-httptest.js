@@ -3,7 +3,7 @@
  *
  * @copyright 2023 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
- * @version 4.0.2
+ * @version 4.0.3
  */
 import http from'node:http';import https from'node:https';import {URL}from'node:url';import {coerce}from'tiny-coerce';import {createRequire}from'module';const headersGet = /GET\, HEAD\, OPTIONS/;
 const headersContentType = /(, )?content-type(, )?/;
