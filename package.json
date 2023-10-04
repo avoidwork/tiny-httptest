@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Lightweight HTTP test framework",
   "type": "module",
   "types": "types/httptest.d.ts",
@@ -59,13 +59,12 @@
     "husky": "^8.0.3",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "precise": "^2.0.1",
     "rollup": "^3.29.4",
     "tenso": "^16.2.4",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "btoa": "^1.2.1",
-    "tiny-coerce": "^2.0.0"
+    "tiny-coerce": "^3.0.0"
   }
 }
