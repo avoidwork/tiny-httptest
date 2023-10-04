@@ -39,7 +39,7 @@ class MyTestRunner extends HTTPTest {}
 
 ## Testing
 
-Tiny HTTP Test has 100% code coverage with its tests.
+Tiny HTTP Test has 100% code coverage with its tests.  Run `npm run test-setup` after installing modules.
 
 ```console
 -------------------|---------|----------|---------|---------|--------------------------------------------------------
