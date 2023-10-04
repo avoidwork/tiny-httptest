@@ -66,6 +66,6 @@
   },
   "dependencies": {
     "btoa": "^1.2.1",
-    "tiny-coerce": "^2.0.0"
+    "tiny-coerce": "^3.0.0"
   }
 }
