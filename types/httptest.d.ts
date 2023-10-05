@@ -1,10 +1,9 @@
-export function httptest({ url, method, body, headers, timeout, http2 }?: {
+export function httptest({ url, method, body, headers, timeout }?: {
     url?: string;
     method?: string;
     body?: any;
     headers?: {};
     timeout?: number;
-    http2?: boolean;
 }): HTTPTest;
 export class HTTPTest {
     constructor(uri: any, method: any, headers: any, body: any, timeout: any);
