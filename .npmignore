@@ -1,10 +1,11 @@
+.idea
+.git
+.github
+.husky
+.nyc_output
 node_modules
 src
 test
-.idea
-.git
 .gitignore
 .eslintrc
-.husky
-.nyc_output
 rollup.config.js
