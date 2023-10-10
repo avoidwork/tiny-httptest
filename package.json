@@ -1,11 +1,11 @@
 {
   "name": "tiny-httptest",
-  "version": "4.0.6",
+  "version": "4.0.7",
   "description": "Lightweight HTTP test framework",
   "type": "module",
   "types": "types/httptest.d.ts",
   "source": "src/httptest.js",
-  "main": "dist/tiny-httptest",
+  "main": "dist/tiny-httptest.cjs",
   "exports": {
     "types": "./types/httptest.d.ts",
     "import": "./dist/tiny-httptest.js",
@@ -16,7 +16,7 @@
     "types"
   ],
   "scripts": {
-    "build": "rm -rf dist && npm run rollup",
+    "build": "rm -rf dist && npm run rollup && npm run mocha",
     "changelog": "auto-changelog -p",
     "fix": "eslint --fix *.js src/*.js test/*.js",
     "lint": "eslint *.js src/*.js test/*.js",
@@ -65,6 +65,6 @@
   },
   "dependencies": {
     "btoa": "^1.2.1",
-    "tiny-coerce": "^3.0.0"
+    "tiny-coerce": "^3.0.1"
   }
 }
