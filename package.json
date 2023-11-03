@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "4.0.7",
+  "version": "4.0.8",
   "description": "Lightweight HTTP test framework",
   "type": "module",
   "types": "types/httptest.d.ts",
