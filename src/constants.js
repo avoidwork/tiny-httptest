@@ -16,7 +16,6 @@ export const APPLICATION_JSON = "application/json";
 export const TRUE = "true";
 export const ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
 export const ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers";
-export const ACCESS_CONTROL_ALLOW_METHODS = "access-control-allow-methods";
 export const ACCESS_CONTROL_ALLOW_HEADERS = "access-control-allow-headers";
 export const ACCESS_CONTROL_ALLOW_CREDENTIALS = "access-control-allow-credentials";
 export const ACCESS_CONTROL_EXPOSE_HEADERS = "access-control-expose-headers";

@@ -1,6 +1,6 @@
 {
   "name": "tiny-httptest",
-  "version": "4.0.8",
+  "version": "4.0.9",
   "description": "Lightweight HTTP test framework",
   "type": "module",
   "types": "types/httptest.d.ts",
@@ -53,18 +53,18 @@
   },
   "homepage": "https://github.com/avoidwork/tiny-httptest",
   "devDependencies": {
-    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-json": "^6.0.1",
     "auto-changelog": "^2.4.0",
-    "eslint": "^8.50.0",
+    "eslint": "^8.53.0",
     "husky": "^8.0.3",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "rollup": "^3.29.4",
+    "rollup": "^4.3.0",
     "tenso": "^16.2.4",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "btoa": "^1.2.1",
-    "tiny-coerce": "^3.0.1"
+    "tiny-coerce": "^3.0.2"
   }
 }

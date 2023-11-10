@@ -42,12 +42,39 @@ class MyTestRunner extends HTTPTest {}
 Tiny HTTP Test has 100% code coverage with its tests.  Run `npm run test-setup` after installing modules.
 
 ```console
--------------------|---------|----------|---------|---------|--------------------------------------------------------
+  Implicit proofs
+    √ Starting test server
+    √ GET / (captures cookie, CSRF token)
+    √ HEAD / (reuses cookie)
+    √ POST / (reuses cookie & CSRF token)
+    √ POST / (reuses cookie & CSRF token + body)
+    √ POST / (reuses cookie & CSRF token + body)
+    √ GET / (CORS Pre-flight)
+    √ GET / (CORS)
+    √ GET /invalid (CORS)
+    √ GET / (Basic Auth)
+    √ GET https://google.com/ (HTTPS) (94ms)
+    √ GET /assets/css/style.css
+    √ GET /assets/css/style.css (ETag)
+    √ Stopping test server
+
+  Error proofs
+    √ Starting test server
+    √ GET https://invalid.local.dev/ (DNS error)
+    √ INVALID / (Invalid HTTP method)
+    √ GET /hello (Error thrown)
+    √ GET /assets/css/style.css (Invalid 404)
+    √ Stopping test server
+
+
+  20 passing (160ms)
+
+-------------------|---------|----------|---------|---------|-----------------------------------------------------------
 File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
--------------------|---------|----------|---------|---------|--------------------------------------------------------
-All files          |     100 |     81.3 |     100 |     100 |                                                       
- tiny-httptest.cjs |     100 |     81.3 |     100 |     100 | 16-23,77,91-96,144,160,178-194,214,229,270,285-290,337
--------------------|---------|----------|---------|---------|--------------------------------------------------------
+-------------------|---------|----------|---------|---------|-----------------------------------------------------------
+All files          |     100 |    81.13 |     100 |     100 |                                                          
+ tiny-httptest.cjs |     100 |    81.13 |     100 |     100 | 16-22,111,125-130,177,193,211-227,247,262,303,318-323,371
+-------------------|---------|----------|---------|---------|-----------------------------------------------------------
 ```
 
 ## Options

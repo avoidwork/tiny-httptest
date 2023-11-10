@@ -135,6 +135,17 @@ describe("Implicit proofs", function () {
 			.end();
 	});
 
+	it("GET /invalid (CORS)", function () {
+		return httptest({url: `http://localhost:${port}/invalid`})
+			.cors("http://not.localhost:8001")
+			.expectStatus(404)
+			.expectHeader("content-type", "application/json")
+			.expectValue("data", null)
+			.expectValue("error", /\w+/)
+			.expectValue("status", 404)
+			.end();
+	});
+
 	it("GET / (Basic Auth)", function () {
 		return httptest({url: `http://user:pass@localhost:${port}`})
 			.cors("http://not.localhost:8001")

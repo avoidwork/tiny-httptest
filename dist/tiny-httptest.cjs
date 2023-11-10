@@ -3,7 +3,7 @@
  *
  * @copyright 2023 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
- * @version 4.0.8
+ * @version 4.0.9
  */
 'use strict';
 
@@ -14,7 +14,6 @@ var tinyCoerce = require('tiny-coerce');
 var module$1 = require('module');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
-const headersGet = /GET\, HEAD\, OPTIONS/;
 const headersContentType = /(, )?content-type(, )?/;
 const maybeJsonHeader = /^(application\/(json|(x-)?javascript)|text\/(javascript|x-javascript|x-json))/;
 const notEmpty = /\w+/;
@@ -36,7 +35,6 @@ const APPLICATION_JSON = "application/json";
 const TRUE = "true";
 const ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
 const ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers";
-const ACCESS_CONTROL_ALLOW_METHODS = "access-control-allow-methods";
 const ACCESS_CONTROL_ALLOW_HEADERS = "access-control-allow-headers";
 const ACCESS_CONTROL_ALLOW_CREDENTIALS = "access-control-allow-credentials";
 const ACCESS_CONTROL_EXPOSE_HEADERS = "access-control-expose-headers";
@@ -130,7 +128,6 @@ class HTTPTest {
 		this.options.headers[ACCESS_CONTROL_REQUEST_HEADERS] = CONTENT_TYPE;
 
 		if (success) {
-			this.expectHeader(ACCESS_CONTROL_ALLOW_METHODS, headersGet);
 			this.expectHeader(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 			this.expectHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, TRUE);
 

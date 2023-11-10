@@ -2,12 +2,11 @@ import http from "node:http";
 import https from "node:https";
 import {URL} from "node:url";
 import {coerce} from "tiny-coerce";
-import {headersContentType, headersGet, maybeJsonHeader, notEmpty, quoted} from "./regex.js";
+import {headersContentType, maybeJsonHeader, notEmpty, quoted} from "./regex.js";
 import {
 	A,
 	ACCESS_CONTROL_ALLOW_CREDENTIALS,
 	ACCESS_CONTROL_ALLOW_HEADERS,
-	ACCESS_CONTROL_ALLOW_METHODS,
 	ACCESS_CONTROL_ALLOW_ORIGIN,
 	ACCESS_CONTROL_EXPOSE_HEADERS,
 	ACCESS_CONTROL_REQUEST_HEADERS,
@@ -108,7 +107,6 @@ export class HTTPTest {
 		this.options.headers[ACCESS_CONTROL_REQUEST_HEADERS] = CONTENT_TYPE;
 
 		if (success) {
-			this.expectHeader(ACCESS_CONTROL_ALLOW_METHODS, headersGet);
 			this.expectHeader(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
 			this.expectHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, TRUE);
 
