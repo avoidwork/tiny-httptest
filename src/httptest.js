@@ -223,12 +223,13 @@ export class HTTPTest {
 
 		if (this.status >= 400) {
 			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_ORIGIN);
-			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_ORIGIN);
+			this.expects.get(HEADERS).delete(ACCESS_CONTROL_REQUEST_HEADERS);
 			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_HEADERS);
+			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_CREDENTIALS);
 			this.expects.get(HEADERS).delete(ACCESS_CONTROL_EXPOSE_HEADERS);
 		}
 
-		this.expects.get(HEADERS).forEach((v, k) => this.test(v, this.headers[k], this.warning(HEADER, v, coerce(this.headers[k]), k)));
+		this.expects.get(HEADERS).forEach((v, k) => this.test(v, this.headers[k], this.warning(`${HEADER} "${k}"`, v, coerce(this.headers[k]), k)));
 
 		if (this.body && maybeJsonHeader.test(this.headers[CONTENT_TYPE] || EMPTY)) {
 			try {
