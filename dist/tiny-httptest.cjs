@@ -1,9 +1,9 @@
 /**
  * tiny-httptest
  *
- * @copyright 2023 Jason Mulligan <jason.mulligan@avoidwork.com>
+ * @copyright 2024 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
- * @version 4.0.9
+ * @version 4.0.10
  */
 'use strict';
 
@@ -240,6 +240,13 @@ class HTTPTest {
 
 		if (status && this.status !== status) {
 			this.test(this.status, status, this.warning(STATUS, this.status, status));
+		}
+
+		if (this.status >= 400) {
+			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_ORIGIN);
+			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_ORIGIN);
+			this.expects.get(HEADERS).delete(ACCESS_CONTROL_ALLOW_HEADERS);
+			this.expects.get(HEADERS).delete(ACCESS_CONTROL_EXPOSE_HEADERS);
 		}
 
 		this.expects.get(HEADERS).forEach((v, k) => this.test(v, this.headers[k], this.warning(HEADER, v, tinyCoerce.coerce(this.headers[k]), k)));
