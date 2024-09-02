@@ -61,7 +61,7 @@
     "mocha": "^10.2.0",
     "nyc": "^17.0.0",
     "rollup": "^4.3.0",
-    "tenso": "^16.2.4",
+    "tenso": "^17.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
