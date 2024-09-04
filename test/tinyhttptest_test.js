@@ -1,7 +1,7 @@
 import {join} from "node:path";
 import assert from "node:assert";
 import * as url from "node:url";
-import tenso from "tenso";
+import {tenso} from "tenso";
 import {httptest} from "../dist/tiny-httptest.cjs";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
@@ -30,13 +30,15 @@ describe("Implicit proofs", function () {
 	it("Starting test server", function (done) {
 		app = tenso({
 			port: port,
-			routes: routes,
+			initRoutes: routes,
 			logging: {
-				level: "error"
+				enabled: false
 			},
 			etags: {enabled: true},
-			root: join(__dirname, "www")
-		});
+			webroot: {
+				root: join(__dirname, "www")
+			}
+		}).start();
 		done();
 	});
 
@@ -181,7 +183,8 @@ describe("Implicit proofs", function () {
 	});
 
 	it("Stopping test server", function (done) {
-		app.server.close(() => done());
+		app.stop();
+		done();
 	});
 });
 
@@ -195,11 +198,11 @@ describe("Error proofs", function () {
 	it("Starting test server", function (done) {
 		app = tenso({
 			port: port,
-			routes: routes,
+			initRoutes: routes,
 			logging: {
-				level: "error"
+				enabled: false
 			}
-		});
+		}).start();
 		done();
 	});
 
@@ -232,6 +235,7 @@ describe("Error proofs", function () {
 	});
 
 	it("Stopping test server", function (done) {
-		app.server.close(() => done());
+		app.stop();
+		done();
 	});
 });
