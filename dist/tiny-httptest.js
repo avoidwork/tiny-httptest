@@ -3,7 +3,7 @@
  *
  * @copyright 2024 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
- * @version 4.0.12
+ * @version 4.0.13
  */
 import http from'node:http';import https from'node:https';import {URL}from'node:url';import {coerce}from'tiny-coerce';import {createRequire}from'module';const headersContentType = /(, )?content-type(, )?/;
 const maybeJsonHeader = /^(application\/(json|(x-)?javascript)|text\/(javascript|x-javascript|x-json))/;

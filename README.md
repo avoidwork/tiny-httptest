@@ -158,5 +158,5 @@ Decorates `arg` as request body & sets request headers.
 Validates that `arg` is equal to or passes `value` test, throws `Error` with `err` as message if invalid.
 
 ## License
-Copyright (c) 2023 Jason Mulligan
+Copyright (c) 2024 Jason Mulligan
 Licensed under the BSD-3 license.
