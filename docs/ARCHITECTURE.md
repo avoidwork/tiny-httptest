@@ -29,47 +29,57 @@ tiny-httptest is a lightweight HTTP test framework built on Node.js's native `ht
 
 ## Component Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        HTTPTest Class                        │
-├─────────────────────────────────────────────────────────────┤
-│  Public API                      │  Private Implementation  │
-│  ───────────                     │  ─────────────────────   │
-│  • captureHeader()               │  • #processExpectations()│
-│  • cookies()                     │  • #validate()           │
-│  • cors()                        │  • #request()            │
-│  • end()                         │                          │
-│  • etags()                       │  Private Fields:         │
-│  • expectBody()                  │  • #body, #headers       │
-│  • expectHeader()                │  • #status, #expects     │
-│  • expectJson()                  │  • #capture, #reuse      │
-│  • expectStatus()                │  • #etag, #jar           │
-│  • expectValue()                 │                          │
-│  • json()                        │                          │
-│  • reuseHeader()                 │                          │
-│  • send()                        │                          │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Helpers Module                          │
-├─────────────────────────────────────────────────────────────┤
-│  • validateMethod()      • validateHeaders()                │
-│  • formatBody()          • validateBody()                   │
-│  • buildOptions()        • validateValues()                 │
-│  • test()                • captureState()                   │
-│  • formatError()         • applyReuse()                     │
-│  • removeCorsHeaders()                                     │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Shared State Module                       │
-├─────────────────────────────────────────────────────────────┤
-│  • jar: Map<string, string>      // Cookie storage          │
-│  • captured: Map<string, string> // Header capture          │
-│  • etags: Map<string, string>    // ETag storage            │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph HTTPTest["HTTPTest Class"]
+        direction TB
+        subgraph Public["Public API"]
+            P1[captureHeader]
+            P2[cookies]
+            P3[cors]
+            P4[end]
+            P5[etags]
+            P6[expectBody]
+            P7[expectHeader]
+            P8[expectJson]
+            P9[expectStatus]
+            P10[expectValue]
+            P11[json]
+            P12[reuseHeader]
+            P13[send]
+        end
+        
+        subgraph Private["Private Implementation"]
+            Pr1["#processExpectations"]
+            Pr2["#validate"]
+            Pr3["#request"]
+            
+            Fields["Private Fields:<br/>#body, #headers, #status<br/>#expects, #capture, #reuse<br/>#etag, #jar"]
+        end
+    end
+    
+    subgraph Helpers["Helpers Module"]
+        H1[validateMethod]
+        H2[formatBody]
+        H3[buildOptions]
+        H4[test]
+        H5[formatError]
+        H6[validateHeaders]
+        H7[validateBody]
+        H8[validateValues]
+        H9[captureState]
+        H10[applyReuse]
+        H11[removeCorsHeaders]
+    end
+    
+    subgraph Shared["Shared State Module"]
+        S1["jar: Map&lt;string, string&gt;<br/>Cookie storage"]
+        S2["captured: Map&lt;string, string&gt;<br/>Header capture"]
+        S3["etags: Map&lt;string, string&gt;<br/>ETag storage"]
+    end
+    
+    HTTPTest --> Helpers
+    Helpers --> Shared
 ```
 
 ---
@@ -116,40 +126,46 @@ await test.end();
 
 **Steps:**
 
-```
-┌────────────────────────────────────────────────────────────┐
-│                     end() Flow                              │
-├────────────────────────────────────────────────────────────┤
-│  1. applyReuse()                                           │
-│     ├─ Check jar for cookies                               │
-│     ├─ Check etags for ETag                                │
-│     └─ Check captured headers                              │
-│                                                            │
-│  2. #request()                                             │
-│     ├─ Select http/https client                            │
-│     ├─ Create request                                      │
-│     ├─ Stream response body                                │
-│     └─ Resolve with {headers, statusCode, body}           │
-│                                                            │
-│  3. Store response to private fields                       │
-│     ├─ #body = response.body                               │
-│     ├─ #headers = response.headers                         │
-│     └─ #status = response.statusCode                       │
-│                                                            │
-│  4. #processExpectations()                                 │
-│     ├─ Remove CORS headers for error responses             │
-│     ├─ Validate status code                                │
-│     ├─ Validate headers                                    │
-│     ├─ Validate body                                       │
-│     └─ Validate JSON values                                │
-│                                                            │
-│  5. captureState()                                         │
-│     ├─ Capture headers to global Map                       │
-│     ├─ Store cookies to jar                                │
-│     └─ Store ETags to etags Map                            │
-│                                                            │
-│  6. Return this (for chaining)                            │
-└────────────────────────────────────────────────────────────┘
+```mermaid
+sequenceDiagram
+    participant User
+    participant Test as HTTPTest
+    participant Helpers
+    participant Shared
+    
+    User->>Test: await test.end()
+    
+    Test->>Helpers: applyReuse(jar, etag, reuse)
+    Helpers->>Shared: jar.get(key)
+    Shared-->>Helpers: cookie
+    Helpers->>Shared: etags.get(key)
+    Shared-->>Helpers: etag
+    Helpers->>Shared: captured.has(name)
+    Shared-->>Helpers: header
+    Helpers-->>Test: updated headers
+    
+    Test->>Test: #request()
+    alt HTTP
+        Test->>http: request(options)
+    else HTTPS
+        Test->>https: request(options)
+    end
+    http/https->>Test: response
+    
+    Test->>Test: store #body, #headers, #status
+    
+    Test->>Test: #processExpectations()
+    Test->>Helpers: removeCorsHeaders()
+    Test->>Helpers: validateHeaders()
+    Test->>Helpers: validateBody()
+    Test->>Helpers: validateValues()
+    
+    Test->>Helpers: captureState()
+    Helpers->>Shared: captured.set(name, value)
+    Helpers->>Shared: jar.set(key, cookies)
+    Helpers->>Shared: etags.set(key, etag)
+    
+    Test-->>User: return this
 ```
 
 **Time Complexity:** O(n) where n = number of expectations
@@ -219,41 +235,40 @@ valid = expected === actual;
 
 ### Validation Pipeline
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   #processExpectations()                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  if (#status >= 400)                                 │   │
-│  │    removeCorsHeaders(#expects.get(HEADERS))          │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                           │                                   │
-│                           ▼                                   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  #validate(STATUS, #expects.get(STATUS), #status)    │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                           │                                   │
-│                           ▼                                   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  validateHeaders(#expects.get(HEADERS), ...)         │   │
-│  │    └─> for each header: #validate(type, exp, act)   │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                           │                                   │
-│                           ▼                                   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  validateBody(#expects.get(BODY), ...)               │   │
-│  │    ├─ Parse JSON if content-type indicates          │   │
-│  │    └─> #validate(BODY, expected, actual)            │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                           │                                   │
-│                           ▼                                   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  validateValues(#expects.get(VALUES), ...)           │   │
-│  │    └─> for each value: #validate(BODY, exp, act)    │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A["#processExpectations()"] --> B{status >= 400?}
+    B -->|Yes| C[removeCorsHeaders]
+    B -->|No| D
+    C --> D["#validate(STATUS)"]
+    D --> E[validateHeaders]
+    E --> F["for each header:<br/>#validate(type, exp, act)"]
+    F --> G[validateBody]
+    G --> H{content-type JSON?}
+    H -->|Yes| I[parse JSON body]
+    H -->|No| J
+    I --> J["#validate(BODY)"]
+    J --> K[validateValues]
+    K --> L["for each value:<br/>#validate(BODY, exp, act)"]
+    
+    M["#validate(type, expected, actual)"] --> N{expected?}
+    N -->|No| O[return]
+    N -->|Yes| P{test(expected, actual)}
+    P -->|Yes| O
+    P -->|No| Q[throw Error]
+    
+    R["test(expected, actual)"] --> S{Function?}
+    S -->|Yes| T[expected(actual) === true]
+    S -->|No| U{RegExp?}
+    U -->|Yes| V[expected.test(actual)]
+    U -->|No| W{Object?}
+    W -->|Yes| X[JSON.stringify compare]
+    W -->|No| Y{Number?}
+    Y -->|Yes| Z[Number compare]
+    Y -->|No| AA[strict equality]
+    
+    style C fill:#f9f,stroke:#333
+    style Q fill:#f96,stroke:#333
 ```
 
 ### Error Handling
