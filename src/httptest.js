@@ -44,7 +44,19 @@ import {
 } from "./constants.js";
 import {captured, etags, jar} from "./shared.js";
 
+/**
+ * HTTPTest class for creating HTTP test requests
+ * @class
+ */
 export class HTTPTest {
+	/**
+	 * Creates an HTTPTest instance
+	 * @param {string} uri - The URL to request
+	 * @param {string} method - The HTTP method
+	 * @param {Object} headers - Request headers
+	 * @param {string|Object|Array} body - Request body
+	 * @param {number} timeout - Request timeout in milliseconds
+	 */
 	constructor (uri, method, headers, body, timeout) {
 		const parsed = new URL(uri);
 
@@ -86,6 +98,11 @@ export class HTTPTest {
 		this.status = 0;
 	}
 
+	/**
+	 * Captures a header to be reused by another instance
+	 * @param {string} name - Header name to capture
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	captureHeader (name) {
 		if (!this.capture.has(name)) {
 			this.capture.add(name);
@@ -94,12 +111,23 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Enables or disables cookie capture & reuse
+	 * @param {boolean} [state=true] - Whether to enable cookie jar
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	cookies (state = true) {
 		this.jar = state;
 
 		return this;
 	}
 
+	/**
+	 * Sets CORS request & response header expectations
+	 * @param {string} [hostname] - Origin hostname (defaults to request hostname)
+	 * @param {boolean} [success=true] - Whether to expect CORS headers
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	cors (arg, success = true) {
 		const origin = arg || this.options.hostname;
 
@@ -120,6 +148,10 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Ends the request, Promise resolves with HTTPTest instance or rejects with Error
+	 * @returns {Promise<HTTPTest>} Promise resolving to this instance
+	 */
 	end () {
 		return new Promise((resolve, reject) => {
 			const done = err => {
@@ -163,36 +195,67 @@ export class HTTPTest {
 		});
 	}
 
+	/**
+	 * Enables or disables ETag capture & reuse
+	 * @param {boolean} [state=true] - Whether to enable ETag handling
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	etags (state = true) {
 		this.etag = state;
 
 		return this;
 	}
 
+	/**
+	 * Sets an expectation of the response body
+	 * @param {RegExp|Function|string} [value=/\w+/] - Expected body value or test
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	expectBody (value = notEmpty) {
 		this.expects.set(BODY, value);
 
 		return this;
 	}
 
+	/**
+	 * Sets an expectation of a response header
+	 * @param {string} name - Header name
+	 * @param {RegExp|Function|string} [value=/\w+/] - Expected header value or test
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	expectHeader (name, value = notEmpty) {
 		this.expects.get(HEADERS).set(name.toLowerCase(), value);
 
 		return this;
 	}
 
+	/**
+	 * Sets an expectation of response header content-type as JSON
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	expectJson () {
 		this.options.headers.accept = APPLICATION_JSON;
 
 		return this.expectHeader(CONTENT_TYPE, maybeJsonHeader);
 	}
 
+	/**
+	 * Sets an expectation of response status code
+	 * @param {number} [value=200] - Expected status code
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	expectStatus (value = 200) {
 		this.expects.set(STATUS, value);
 
 		return this;
 	}
 
+	/**
+	 * Sets an expectation of a JSON value in the response body
+	 * @param {string} name - JSON key name
+	 * @param {*} value - Expected value
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	expectValue (name, value) {
 		this.expectJson();
 		this.expects.get(VALUES).set(name, value);
@@ -200,6 +263,11 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Sets request & response to JSON, sends arg if provided
+	 * @param {*} [arg] - JSON body to send
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	json (arg = undefined) {
 		this.options.headers[CONTENT_TYPE] = APPLICATION_JSON;
 
@@ -210,6 +278,10 @@ export class HTTPTest {
 		return this.expectJson();
 	}
 
+	/**
+	 * Processes the response and validates expectations
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	process () {
 		const body = this.expects.get(BODY),
 			status = this.expects.get(STATUS);
@@ -264,6 +336,10 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Makes the HTTP request
+	 * @returns {Promise} Promise resolving when response completes
+	 */
 	request () {
 		return new Promise((resolve, reject) => {
 			this.req = (this.options.protocol === `${HTTP}${DELIMITER}` ? http : https).request(this.options, res => {
@@ -287,6 +363,11 @@ export class HTTPTest {
 		});
 	}
 
+	/**
+	 * Marks a header for reuse from captured headers
+	 * @param {string} name - Header name to reuse
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	reuseHeader (name) {
 		if (!this.reuse.has(name)) {
 			this.reuse.add(name);
@@ -295,6 +376,11 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Decorates arg as request body & sets request headers
+	 * @param {string|Object|Array} arg - Body to send
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 */
 	send (arg) {
 		const type = typeof arg;
 		let body = arg;
@@ -323,6 +409,14 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Validates that arg is equal to or passes value test
+	 * @param {*} arg - Value to test
+	 * @param {*} value - Expected value or test function
+	 * @param {string} err - Error message if validation fails
+	 * @returns {HTTPTest} Returns this instance for chaining
+	 * @throws {Error} Throws error if validation fails
+	 */
 	test (arg, value, err) {
 		let valid;
 
@@ -349,6 +443,14 @@ export class HTTPTest {
 		return this;
 	}
 
+	/**
+	 * Generates a warning message for validation failures
+	 * @param {string} type - Type of value being tested
+	 * @param {*} a - Expected value
+	 * @param {*} b - Actual value
+	 * @param {string} k - Key name for headers
+	 * @returns {string} Warning message
+	 */
 	warning (type, a, b, k) {
 		const regex = a instanceof RegExp,
 			va = regex ? `${a.toString()}.test(res.headers["${k}"])` : JSON.stringify(a),
@@ -358,6 +460,18 @@ export class HTTPTest {
 	}
 }
 
+/**
+ * Creates an HTTP test request
+ * @function httptest
+ * @param {Object} [options] - Test options
+ * @param {string} [options.url=http://localhost] - URL to request
+ * @param {string} [options.method=GET] - HTTP method
+ * @param {string|Object|Array} [options.body=null] - Request body
+ * @param {Object} [options.headers={}] - Request headers
+ * @param {number} [options.timeout=30000] - Request timeout in milliseconds
+ * @returns {HTTPTest} New HTTPTest instance
+ * @throws {Error} Throws error if method is not valid
+ */
 export function httptest ({url = LOCALHOST, method = GET, body = null, headers = {}, timeout = TIMEOUT} = {}) {
 	const type = method.toUpperCase();
 
