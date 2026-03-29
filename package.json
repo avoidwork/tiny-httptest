@@ -25,8 +25,7 @@
     "test-setup": "mkdir -p test/www || mkdir .\\test\\www && cp -r node_modules/tenso/www/* test/www/ || echo 'tenso not installed'",
     "test": "npm run lint && npm run build",
     "types": "npx -p typescript tsc src/httptest.js --declaration --allowJs --emitDeclarationOnly --outDir types",
-    "prepare": "husky",
-    "postinstall": "npm run test-setup"
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
