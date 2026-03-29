@@ -237,33 +237,33 @@ valid = expected === actual;
 
 ```mermaid
 flowchart TD
-    A["#processExpectations()"] --> B[Check status >= 400]
+    A["processExpectations"] --> B{Check status >= 400}
     B -->|Yes| C[removeCorsHeaders]
     B -->|No| D
-    C --> D["#validate(STATUS)"]
+    C --> D["validate STATUS"]
     D --> E[validateHeaders]
     E --> F["for each header: validate"]
     F --> G[validateBody]
-    G --> H[Check content-type]
+    G --> H{Check content-type}
     H -->|Yes| I[parse JSON body]
     H -->|No| J
-    I --> J["#validate(BODY)"]
+    I --> J["validate BODY"]
     J --> K[validateValues]
     K --> L["for each value: validate"]
     
-    M["#validate()"] --> N[Check expected exists]
+    M["validate"] --> N{Check expected exists}
     N -->|No| O[return]
-    N -->|Yes| P[Run test()]
+    N -->|Yes| P[Run test]
     P -->|Valid| O
     P -->|Invalid| Q[throw Error]
     
-    R["test()"] --> S[Check Function]
-    S -->|Yes| T[Call expected(actual)]
-    S -->|No| U[Check RegExp]
-    U -->|Yes| V[Run expected.test(actual)]
-    U -->|No| W[Check Object]
+    R["test"] --> S{Check Function}
+    S -->|Yes| T[Call expected actual]
+    S -->|No| U{Check RegExp}
+    U -->|Yes| V[Run expected test actual]
+    U -->|No| W{Check Object}
     W -->|Yes| X[Compare JSON strings]
-    W -->|No| Y[Check Number]
+    W -->|No| Y{Check Number}
     Y -->|Yes| Z[Compare numbers]
     Y -->|No| AA[Strict equality]
     
