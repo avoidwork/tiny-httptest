@@ -1,8 +1,6 @@
 import http from "node:http";
 import https from "node:https";
 import {URL} from "node:url";
-import {coerce} from "tiny-coerce";
-import {headersContentType, maybeJsonHeader, notEmpty, quoted} from "./regex.js";
 import {
 	ACCESS_CONTROL_ALLOW_CREDENTIALS,
 	ACCESS_CONTROL_ALLOW_HEADERS,
@@ -10,96 +8,33 @@ import {
 	ACCESS_CONTROL_EXPOSE_HEADERS,
 	ACCESS_CONTROL_REQUEST_HEADERS,
 	APPLICATION_JSON,
-	BASIC,
-	CONTENT_LENGTH,
 	CONTENT_TYPE,
 	DELIMITER,
 	EMPTY,
 	GET,
-	HEADER,
 	HTTP,
-	IF_NONE_MATCH,
-	INVALID_HTTP_METHOD,
 	LOCALHOST,
 	OPTIONS,
 	SET_COOKIE,
 	STATUS,
-	TRUE,
 	TIMEOUT,
 	USER_AGENT,
-	USER_AGENT_VALUE,
-	UTF8
+	USER_AGENT_VALUE
 } from "./constants.js";
-import {captured, etags, jar} from "./shared.js";
-
-const PROTOCOL_DELIMITER = `${HTTP}${DELIMITER}`;
-
-/**
- * Validates HTTP method
- * @param {string} method - HTTP method to validate
- * @returns {string} Uppercase method
- * @throws {Error} If method is invalid
- */
-function validateMethod(method) {
-	const type = method.toUpperCase();
-	if (!http.METHODS.includes(type)) {
-		throw new Error(INVALID_HTTP_METHOD);
-	}
-	return type;
-}
-
-/**
- * Validates and formats request body
- * @param {string|Object|Array} body - Body to validate
- * @returns {string} Stringified body
- */
-function formatBody(body) {
-	if (typeof body === "string") {
-		return quoted.test(body) ? body : JSON.stringify(body);
-	}
-	try {
-		return JSON.stringify(body, null, 0);
-	} catch {
-		return EMPTY;
-	}
-}
-
-/**
- * Builds request options with defaults
- * @param {URL} parsed - Parsed URL
- * @param {string} method - HTTP method
- * @param {Object} headers - Request headers
- * @param {string|Object|Array} body - Request body
- * @param {number} timeout - Request timeout
- * @returns {Object} Request options
- */
-function buildOptions(parsed, method, headers, body, timeout) {
-	const options = {
-		hostname: parsed.hostname,
-		method,
-		path: `${parsed.pathname}${parsed.search}`,
-		port: parsed.port,
-		protocol: parsed.protocol,
-		headers: {
-			...headers,
-			[USER_AGENT]: USER_AGENT_VALUE
-		},
-		timeout
-	};
-
-	if (parsed.username?.trim()) {
-		options.auth = `${parsed.username}${DELIMITER}${parsed.password}`;
-		options.headers.authorization = BASIC.replace("%A", Buffer.from(options.auth).toString("base64"));
-	}
-
-	if (body) {
-		const formatted = formatBody(body);
-		options.body = formatted;
-		options.headers[CONTENT_LENGTH] = Buffer.byteLength(formatted);
-	}
-
-	return options;
-}
+import {
+	applyReuse,
+	buildOptions,
+	captureState,
+	formatBody,
+	formatError,
+	PROTOCOL_DELIMITER,
+	removeCorsHeaders,
+	test,
+	validateBody,
+	validateHeaders,
+	validateMethod,
+	validateValues
+} from "./helpers.js";
 
 /**
  * HTTPTest class for creating HTTP test requests
@@ -120,10 +55,11 @@ export class HTTPTest {
 		this.#body = EMPTY;
 		this.#capture = new Set();
 		this.#etag = false;
-		#expects.set(STATUS, 0);
-		#expects.set(BODY, EMPTY);
-		#expects.set(HEADERS, new Map());
-		#expects.set(VALUES, new Map());
+		this.#expects = new Map();
+		this.#expects.set(STATUS, 0);
+		this.#expects.set(BODY, EMPTY);
+		this.#expects.set(HEADERS, new Map());
+		this.#expects.set(VALUES, new Map());
 		this.options = buildOptions(parsed, validateMethod(method), headers, body, timeout);
 
 		this.#jar = false;
@@ -179,7 +115,16 @@ export class HTTPTest {
 	 * @returns {Promise<HTTPTest>} Promise resolving to this instance
 	 */
 	async end() {
-		await this.#applyReuse();
+		this.options.headers = applyReuse(
+			this.#jar,
+			this.#etag,
+			this.#reuse,
+			this.options.hostname,
+			this.options.port,
+			this.options.path,
+			this.options.headers
+		);
+
 		const response = await this.#request();
 
 		this.#body = response.body;
@@ -187,7 +132,15 @@ export class HTTPTest {
 		this.#status = response.statusCode;
 
 		this.#processExpectations();
-		this.#captureState();
+		captureState(
+			this.#capture,
+			this.#headers,
+			this.#jar,
+			this.#etag,
+			this.options.hostname,
+			this.options.port,
+			this.options.path
+		);
 
 		return this;
 	}
@@ -208,7 +161,7 @@ export class HTTPTest {
 	 * @returns {HTTPTest} Returns this instance for chaining
 	 */
 	expectBody(value = notEmpty) {
-		#expects.set(BODY, value);
+		this.#expects.set(BODY, value);
 		return this;
 	}
 
@@ -219,7 +172,7 @@ export class HTTPTest {
 	 * @returns {HTTPTest} Returns this instance for chaining
 	 */
 	expectHeader(name, value = notEmpty) {
-		#expects.get(HEADERS).set(name.toLowerCase(), value);
+		this.#expects.get(HEADERS).set(name.toLowerCase(), value);
 		return this;
 	}
 
@@ -238,7 +191,7 @@ export class HTTPTest {
 	 * @returns {HTTPTest} Returns this instance for chaining
 	 */
 	expectStatus(value = 200) {
-		#expects.set(STATUS, value);
+		this.#expects.set(STATUS, value);
 		return this;
 	}
 
@@ -250,7 +203,7 @@ export class HTTPTest {
 	 */
 	expectValue(name, value) {
 		this.expectJson();
-		#expects.get(VALUES).set(name, value);
+		this.#expects.get(VALUES).set(name, value);
 		return this;
 	}
 
@@ -290,7 +243,7 @@ export class HTTPTest {
 		return this;
 	}
 
-	#expects = new Map();
+	#expects;
 	#body = EMPTY;
 	#headers = {};
 	#status = 0;
@@ -301,115 +254,20 @@ export class HTTPTest {
 
 	#processExpectations() {
 		if (this.#status >= 400) {
-			for (const key of [ACCESS_CONTROL_ALLOW_ORIGIN, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS, ACCESS_CONTROL_EXPOSE_HEADERS]) {
-				#expects.get(HEADERS).delete(key);
-			}
+			removeCorsHeaders(this.#expects.get(HEADERS));
 		}
 
-		this.#validate(STATUS, #expects.get(STATUS), this.#status);
-		this.#validateHeaders();
-		this.#validateBody();
-		this.#validateValues();
-	}
-
-	#validateHeaders() {
-		for (const [name, expected] of #expects.get(HEADERS)) {
-			this.#validate(`${HEADER} "${name}"`, expected, coerce(this.#headers[name]));
-		}
-	}
-
-	#validateBody() {
-		const expected = #expects.get(BODY);
-		if (expected && maybeJsonHeader.test(this.#headers[CONTENT_TYPE] || EMPTY)) {
-			try {
-				this.#body = JSON.parse(this.#body);
-			} catch {
-				// Keep as string if not valid JSON
-			}
-		}
-		if (expected) {
-			this.#validate(BODY, expected, this.#body);
-		}
-	}
-
-	#validateValues() {
-		for (const [name, expected] of #expects.get(VALUES)) {
-			this.#validate(BODY, expected, this.#body[name]);
-		}
+		this.#validate(STATUS, this.#expects.get(STATUS), this.#status);
+		validateHeaders(this.#expects.get(HEADERS), this.#headers, (type, exp, act) => this.#validate(type, exp, act));
+		this.#body = validateBody(this.#expects.get(BODY), this.#body, this.#headers, (type, exp, act) => this.#validate(type, exp, act));
+		validateValues(this.#expects.get(VALUES), this.#body, (type, exp, act) => this.#validate(type, exp, act));
 	}
 
 	#validate(type, expected, actual) {
 		if (!expected || expected === EMPTY) return;
 
-		const valid = this.#test(expected, actual);
-		if (!valid) {
-			throw new Error(this.#formatError(type, expected, actual));
-		}
-	}
-
-	#test(expected, actual) {
-		if (expected instanceof Function) {
-			try {
-				return expected(actual) === true;
-			} catch {
-				return false;
-			}
-		}
-		if (expected instanceof RegExp) {
-			return expected.test(actual);
-		}
-		if (typeof expected === "object" && typeof actual === "object") {
-			return JSON.stringify(expected, null, 0) === JSON.stringify(actual, null, 0);
-		}
-		if (typeof expected === "number" && typeof actual === "number") {
-			return Number(expected) === Number(actual);
-		}
-		return expected === actual;
-	}
-
-	#formatError(type, expected, actual) {
-		const exp = expected instanceof RegExp ? expected.toString() : JSON.stringify(expected);
-		const act = actual === undefined ? "undefined" : JSON.stringify(actual);
-		return `Expected ${type} to be ${exp}, got ${act}`;
-	}
-
-	#captureState() {
-		for (const name of this.#capture) {
-			if (this.#headers[name] !== undefined) {
-				captured.set(name, this.#headers[name]);
-			}
-		}
-
-		if (this.#jar && this.#headers[SET_COOKIE]) {
-			jar.set(`${this.options.hostname}${DELIMITER}${this.options.port}`, this.#headers[SET_COOKIE]);
-		}
-
-		if (this.#etag && this.#headers.etag) {
-			etags.set(`${this.options.hostname}${DELIMITER}${this.options.port}${this.options.path}`, this.#headers.etag);
-		}
-	}
-
-	async #applyReuse() {
-		const key = `${this.options.hostname}${DELIMITER}${this.options.port}`;
-
-		if (this.#jar) {
-			const cookie = jar.get(key);
-			if (cookie) {
-				this.options.headers.cookie = cookie;
-			}
-		}
-
-		if (this.#etag) {
-			const etag = etags.get(`${key}${this.options.path}`);
-			if (etag) {
-				this.options.headers[IF_NONE_MATCH] = etag;
-			}
-		}
-
-		for (const name of this.#reuse) {
-			if (captured.has(name)) {
-				this.options.headers[name] = captured.get(name);
-			}
+		if (!test(expected, actual)) {
+			throw new Error(formatError(type, expected, actual));
 		}
 	}
 
@@ -453,7 +311,7 @@ export class HTTPTest {
  * @param {Object} [options.headers={}] - Request headers
  * @param {number} [options.timeout=30000] - Request timeout in milliseconds
  * @returns {HTTPTest} New HTTPTest instance
- * @throws {Error} Throws error if method is not valid or URL is unsafe
+ * @throws {Error} Throws error if method is not valid
  */
 export function httptest({url = LOCALHOST, method = GET, body = null, headers = {}, timeout = TIMEOUT} = {}) {
 	return new HTTPTest(url, validateMethod(method), headers, body, timeout);
