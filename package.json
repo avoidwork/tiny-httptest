@@ -54,18 +54,15 @@
   },
   "homepage": "https://github.com/avoidwork/tiny-httptest",
   "devDependencies": {
-    "@rollup/plugin-json": "^6.0.1",
-    "auto-changelog": "^2.4.0",
-    "eslint": "^8.53.0",
-    "husky": "^9.0.6",
-    "mocha": "^10.2.0",
-    "nyc": "^17.0.0",
-    "rollup": "^4.3.0",
-    "tenso": "^17.2.1",
-    "typescript": "^5.2.2"
+    "@rollup/plugin-json": "^6.1.0",
+    "auto-changelog": "^2.5.0",
+    "husky": "^9.1.7",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "rollup": "^4.60.0",
+    "woodland": "^22.0.3"
   },
   "dependencies": {
-    "btoa": "^1.2.1",
-    "tiny-coerce": "^3.0.2"
+    "tiny-coerce": "^3.1.0"
   }
 }
