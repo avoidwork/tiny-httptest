@@ -237,35 +237,35 @@ valid = expected === actual;
 
 ```mermaid
 flowchart TD
-    A["#processExpectations()"] --> B{"status >= 400?"}
+    A["#processExpectations()"] --> B[Check status >= 400]
     B -->|Yes| C[removeCorsHeaders]
     B -->|No| D
     C --> D["#validate(STATUS)"]
     D --> E[validateHeaders]
-    E --> F["for each header:<br/>#validate(type, exp, act)"]
+    E --> F["for each header: validate"]
     F --> G[validateBody]
-    G --> H{"content-type JSON?"}
+    G --> H[Check content-type]
     H -->|Yes| I[parse JSON body]
     H -->|No| J
     I --> J["#validate(BODY)"]
     J --> K[validateValues]
-    K --> L["for each value:<br/>#validate(BODY, exp, act)"]
+    K --> L["for each value: validate"]
     
-    M["#validate(type, expected, actual)"] --> N{"expected?"}
+    M["#validate()"] --> N[Check expected exists]
     N -->|No| O[return]
-    N -->|Yes| P{"test() valid?"}
-    P -->|Yes| O
-    P -->|No| Q[throw Error]
+    N -->|Yes| P[Run test()]
+    P -->|Valid| O
+    P -->|Invalid| Q[throw Error]
     
-    R["test(expected, actual)"] --> S{"Function?"}
-    S -->|Yes| T[expected(actual) === true]
-    S -->|No| U{"RegExp?"}
-    U -->|Yes| V[expected.test(actual)]
-    U -->|No| W{"Object?"}
-    W -->|Yes| X[JSON.stringify compare]
-    W -->|No| Y{"Number?"}
-    Y -->|Yes| Z[Number compare]
-    Y -->|No| AA[strict equality]
+    R["test()"] --> S[Check Function]
+    S -->|Yes| T[Call expected(actual)]
+    S -->|No| U[Check RegExp]
+    U -->|Yes| V[Run expected.test(actual)]
+    U -->|No| W[Check Object]
+    W -->|Yes| X[Compare JSON strings]
+    W -->|No| Y[Check Number]
+    Y -->|Yes| Z[Compare numbers]
+    Y -->|No| AA[Strict equality]
     
     style C fill:#f9f,stroke:#333
     style Q fill:#f96,stroke:#333
