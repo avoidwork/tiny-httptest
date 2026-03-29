@@ -456,11 +456,14 @@ export class HTTPTest {
 	 * @returns {string} Warning message
 	 */
 	warning (type, a, b, k) {
-		const regex = a instanceof RegExp,
-			va = regex ? `${a.toString()}.test(res.headers["${k}"])` : JSON.stringify(a),
-			vb = regex || JSON.stringify(b);
+		const expected = a instanceof RegExp ? a.toString() : JSON.stringify(a),
+			received = b === undefined ? "undefined" : JSON.stringify(b);
 
-		return UNEXPECTED_TYPE_A_B.replace(TYPE, type).replace(A, va).replace(B, vb);
+		if (k) {
+			return `Expected ${type} "${k}" to be ${expected}, got ${received}`;
+		}
+
+		return `Expected ${type} to be ${expected}, got ${received}`;
 	}
 }
 
