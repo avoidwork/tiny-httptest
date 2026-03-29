@@ -1,162 +1,306 @@
-# Tiny HTTP Test
+# tiny-httptest
 
-tiny-httptest is a lightweight HTTP test framework that makes it easy to validate CORS is working, capture cookies & HTTP response headers (including etags) and reuse them for sequential tests.
+[![npm version](https://img.shields.io/npm/v/tiny-httptest.svg)](https://www.npmjs.com/package/tiny-httptest)
+[![License](https://img.shields.io/npm/l/tiny-httptest.svg)](LICENSE)
 
-## Using the factory
+Lightweight HTTP test framework for Node.js that makes it easy to validate CORS, capture cookies & headers (including ETags), and chain test expectations.
+
+## Features
+
+- HTTP/HTTPS request testing
+- Cookie jar for stateful tests
+- ETag capture and reuse
+- Header capture and reuse
+- CORS validation
+- Basic auth support
+- 100% code coverage
+
+## Installation
+
+```bash
+npm install tiny-httptest --save-dev
+```
+
+## Quick Start
 
 ```javascript
 import {httptest} from "tiny-httptest";
 
-describe('HTTP Tests', () => {
- it("GET /somefile (Captured the etag)", function () {
-  return httptest({url: `http://localhost:${port}/somefile`})
-          .etags()
-          .expectStatus(200)
-          .end();
- });
+describe("HTTP Tests", function () {
+	it("should capture ETag", async function () {
+		await httptest({url: `http://localhost:${port}/somefile`})
+			.etags()
+			.expectStatus(200)
+			.end();
+	});
 
- it("GET /somefile (Reused the ETag)", function () {
-  return httptest({url: `http://localhost:${port}/somefile`})
-          .etags()
-          .expectStatus(304)
-          .end();
- });
+	it("should reuse ETag", async function () {
+		await httptest({url: `http://localhost:${port}/somefile`})
+			.etags()
+			.expectStatus(304)
+			.end();
+	});
 
- it("GET /invalid-file", function () {
-  return httptest({url: `http://localhost:${port}/invalid-file`})
-          .expectStatus(404)
-          .end();
- });
+	it("should handle 404", async function () {
+		await httptest({url: `http://localhost:${port}/invalid-file`})
+			.expectStatus(404)
+			.end();
+	});
 });
 ```
 
-## Using the Class
+## API
+
+### Factory Function
+
+#### `httptest(options)`
+
+Creates a new HTTP test request.
+
+```javascript
+import {httptest} from "tiny-httptest";
+
+const test = httptest({
+	url: "http://localhost:8000/api",  // Default: http://localhost
+	method: "GET",                      // Default: GET
+	body: null,                         // Default: null
+	headers: {},                        // Default: {}
+	timeout: 30000                      // Default: 30000
+});
+```
+
+### HTTPTest Class
+
+All methods return `this` for chaining, except `end()` which returns a Promise.
+
+#### `captureHeader(name)`
+
+Captures a response header for reuse in subsequent tests.
+
+```javascript
+await httptest({url})
+	.captureHeader("x-csrf-token")
+	.expectStatus(200)
+	.end();
+```
+
+#### `cookies(state = true)`
+
+Enables or disables cookie capture and reuse.
+
+```javascript
+await httptest({url})
+	.cookies()
+	.expectStatus(200)
+	.end();
+```
+
+#### `cors(hostname, success = true)`
+
+Sets CORS request and response header expectations.
+
+```javascript
+// Expect CORS headers for preflight
+await httptest({url, method: "OPTIONS"})
+	.cors("http://localhost:8001")
+	.expectStatus(200)
+	.end();
+
+// Expect CORS headers on actual request
+await httptest({url})
+	.cors("http://localhost:8001")
+	.expectStatus(200)
+	.end();
+
+// Test CORS error case
+await httptest({url})
+	.cors("http://localhost:8001", false)
+	.expectStatus(403)
+	.end();
+```
+
+#### `end()`
+
+Executes the request and validates all expectations. Returns a Promise that resolves with the HTTPTest instance or rejects with an Error.
+
+```javascript
+await httptest({url})
+	.expectStatus(200)
+	.end();
+```
+
+#### `etags(state = true)`
+
+Enables or disables ETag capture and reuse.
+
+```javascript
+// First request captures ETag
+await httptest({url})
+	.etags()
+	.expectStatus(200)
+	.end();
+
+// Second request reuses ETag (expects 304)
+await httptest({url})
+	.etags()
+	.expectStatus(304)
+	.end();
+```
+
+#### `expectBody(value = /\w+/)`
+
+Sets an expectation for the response body.
+
+```javascript
+await httptest({url})
+	.expectBody("Hello world")
+	.end();
+
+await httptest({url})
+	.expectBody(/hello/i)
+	.end();
+
+await httptest({url})
+	.expectBody(body => body.length > 0)
+	.end();
+```
+
+#### `expectHeader(name, value = /\w+/)`
+
+Sets an expectation for a response header.
+
+```javascript
+await httptest({url})
+	.expectHeader("content-type", "application/json")
+	.end();
+
+await httptest({url})
+	.expectHeader("x-powered-by", /express/i)
+	.end();
+```
+
+#### `expectJson()`
+
+Sets an expectation that the response has a JSON content-type.
+
+```javascript
+await httptest({url})
+	.expectJson()
+	.expectValue("status", 200)
+	.end();
+```
+
+#### `expectStatus(value = 200)`
+
+Sets an expectation for the response status code.
+
+```javascript
+await httptest({url})
+	.expectStatus(200)
+	.end();
+
+await httptest({url})
+	.expectStatus(404)
+	.end();
+```
+
+#### `expectValue(name, value)`
+
+Sets an expectation for a JSON value in the response body.
+
+```javascript
+await httptest({url})
+	.expectJson()
+	.expectValue("status", 200)
+	.expectValue("data", {id: 1})
+	.end();
+
+await httptest({url})
+	.expectJson()
+	.expectValue("links", arr => arr.length === 0)
+	.end();
+```
+
+#### `json(arg)`
+
+Sets request and response content-type to JSON, optionally sends a body.
+
+```javascript
+// Set JSON content-type
+await httptest({url, method: "POST"})
+	.json()
+	.end();
+
+// Set JSON content-type and send body
+await httptest({url, method: "POST"})
+	.json({key: "value"})
+	.end();
+```
+
+#### `reuseHeader(name)`
+
+Reuses a previously captured header in the request.
+
+```javascript
+// First test captures the token
+await httptest({url})
+	.captureHeader("x-csrf-token")
+	.expectStatus(200)
+	.end();
+
+// Subsequent test reuses the token
+await httptest({url, method: "POST"})
+	.json({data: "test"})
+	.reuseHeader("x-csrf-token")
+	.expectStatus(200)
+	.end();
+```
+
+#### `send(arg)`
+
+Sets the request body and updates content headers.
+
+```javascript
+await httptest({url, method: "POST"})
+	.send("plain text body")
+	.expectStatus(200)
+	.end();
+
+await httptest({url, method: "POST"})
+	.send({key: "value"})
+	.expectStatus(200)
+	.end();
+```
+
+### Class Extension
+
+You can extend the HTTPTest class for custom test runners:
 
 ```javascript
 import {HTTPTest} from "tiny-httptest";
-class MyTestRunner extends HTTPTest {}
+
+class MyTestRunner extends HTTPTest {
+	// Add custom methods
+	customMethod() {
+		// ...
+		return this;
+	}
+}
 ```
 
-## Testing
+## Running Tests
 
-Tiny HTTP Test has 100% code coverage with its tests.  Run `npm run test-setup` after installing modules.
-
-```console
-  Implicit proofs
-    √ Starting test server
-    √ GET / (captures cookie, CSRF token)
-    √ HEAD / (reuses cookie)
-    √ POST / (reuses cookie & CSRF token)
-    √ POST / (reuses cookie & CSRF token + body)
-    √ POST / (reuses cookie & CSRF token + body)
-    √ GET / (CORS Pre-flight)
-    √ GET / (CORS)
-    √ GET /invalid (CORS)
-    √ GET / (Basic Auth)
-    √ GET https://google.com/ (HTTPS) (94ms)
-    √ GET /assets/css/style.css
-    √ GET /assets/css/style.css (ETag)
-    √ Stopping test server
-
-  Error proofs
-    √ Starting test server
-    √ GET https://invalid.local.dev/ (DNS error)
-    √ INVALID / (Invalid HTTP method)
-    √ GET /hello (Error thrown)
-    √ GET /assets/css/style.css (Invalid 404)
-    √ Stopping test server
-
-
-  20 passing (160ms)
-
--------------------|---------|----------|---------|---------|-----------------------------------------------------------
-File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
--------------------|---------|----------|---------|---------|-----------------------------------------------------------
-All files          |     100 |    81.13 |     100 |     100 |                                                          
- tiny-httptest.cjs |     100 |    81.13 |     100 |     100 | 16-22,111,125-130,177,193,211-227,247,262,303,318-323,371
--------------------|---------|----------|---------|---------|-----------------------------------------------------------
+```bash
+npm test
 ```
 
-## Options
+## Coverage
 
-### body
-
-HTTP request body, defaults to `null` but can be `String`, `Object` or `Array`.
-
-### headers
-
-HTTP request headers, defaults to `{}`.
-
-### method
-
-HTTP request method, defaults to `GET`.
-
-### timeout
-HTTP request timeout as milliseconds, defaults to `30000`.
-
-### url
-URL & port to request, defaults to `http://localhost`.
-
-## API
-
-### captureHeader(name)
-
-Captures a header to be reused by another instance of `TinyHTTPTest`.
-
-### cookies([state = true])
-
-Enables or disables cookie capture & reuse.
-
-### cors([hostname, success = true])
-
-Sets request & response header expectations, defaults to request `hostname` if optional argument is not supplied.
-
-If testing an error case, you must specify the second parameter as `false` to not expect CORS headers.
-
-### end()
-
-Ends the request, `Promise` resolves with `TinyHTTPTest` instance or rejects with `Error`.
-
-### etags([state = true])
-
-Enables or disables ETag capture & reuse.
-
-### expectBody([value = /\w+/])
-
-Sets an expectation of the response body, default value is a `RegExp` which tests if there is a response body.
-
-### expectHeader(name, [value = /\w+/])
-
-Sets an expectation of a response header, default value is a `RegExp` which tests if there is a header value.
-
-### expectJson()
-
-Sets an expectation of response header `content-type`, supports correct and common incorrect header values.
-
-### expectStatus([value = 200])
-
-Sets an expectation of response status code, default value is `200`.
-
-### json([arg])
-
-Sets request & response to `JSON`, sends `arg` if not `undefined`.
-
-### process()
-
-Processes the response of the `TinyHTTPTest` instance.
-
-### reuseHeader(name)
-
-Reuses a captured header from another instance of `TinyHTTPTest`.
-
-### send(arg)
-
-Decorates `arg` as request body & sets request headers.
-
-### test(arg, value, err)
- 
-Validates that `arg` is equal to or passes `value` test, throws `Error` with `err` as message if invalid.
+```bash
+npm run coverage
+```
 
 ## License
+
 Copyright (c) 2026 Jason Mulligan
-Licensed under the BSD-3 license.
+Licensed under the BSD-3-Clause license.
