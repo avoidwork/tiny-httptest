@@ -35,36 +35,6 @@ import {captured, etags, jar} from "./shared.js";
 const PROTOCOL_DELIMITER = `${HTTP}${DELIMITER}`;
 
 /**
- * Validates URL for SSRF protection
- * @param {URL} url - Parsed URL to validate
- * @throws {Error} If URL targets internal/private network
- */
-function validateUrl(url) {
-	const hostname = url.hostname.toLowerCase();
-	const privateRanges = [
-		"localhost",
-		"127.0.0.1",
-		"::1",
-		"0.0.0.0",
-		"::"
-	];
-
-	for (const range of privateRanges) {
-		if (hostname === range || hostname.endsWith(`.${range}`) || hostname.endsWith(`.${range}.local`)) {
-			throw new Error(`Blocked: URL target "${hostname}" is in a private range`);
-		}
-	}
-
-	const ipMatch = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-	if (ipMatch) {
-		const [, a, b] = ipMatch.map(Number);
-		if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || a === 0) {
-			throw new Error(`Blocked: URL target "${hostname}" is in a private IP range`);
-		}
-	}
-}
-
-/**
  * Validates HTTP method
  * @param {string} method - HTTP method to validate
  * @returns {string} Uppercase method
@@ -146,7 +116,6 @@ export class HTTPTest {
 	 */
 	constructor(uri, method, headers, body, timeout) {
 		const parsed = new URL(uri);
-		validateUrl(parsed);
 
 		this.#body = EMPTY;
 		this.#capture = new Set();
