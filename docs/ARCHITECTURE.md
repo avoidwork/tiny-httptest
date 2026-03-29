@@ -253,7 +253,7 @@ flowchart TD
     
     M["#validate(type, expected, actual)"] --> N{expected?}
     N -->|No| O[return]
-    N -->|Yes| P{test(expected, actual)}
+    N -->|Yes| P{test() valid?}
     P -->|Yes| O
     P -->|No| Q[throw Error]
     
